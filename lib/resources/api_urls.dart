@@ -6,5 +6,8 @@ class ApiUrls{
   static const sendEmergencyAlertApi = "${baseUrl}sendalert";
   static const alertDetailsApiUrl = "${baseUrl}getalertdetail";
   static const aboutUsApiUrl = "${baseUrl}aboutus";
+  static const sendEtaApiUrl = "${baseUrl}sendadmalert";
+  static const getActiveAlertUrl = "${baseUrl}getactivealerts";
+  static const updateTokenUrl = "${baseUrl}updatetoken";
 
 }

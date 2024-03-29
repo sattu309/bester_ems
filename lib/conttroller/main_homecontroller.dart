@@ -17,14 +17,6 @@ class MainHomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    print("result11111");
-    // Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-    //   print("result11111");
-    //   if (result == ConnectivityResult.none) {
-    //     internetConnection.value = false;
-    //   } else {
-    //     internetConnection.value = true;
-    //   }
-    // });
+
   }
 }

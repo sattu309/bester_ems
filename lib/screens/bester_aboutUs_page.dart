@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../models/aboutus_model.dart';
 import '../resources/api_urls.dart';
+import '../resources/app_theme.dart';
 
 class AboutUsPage extends StatefulWidget {
   const AboutUsPage({Key? key}) : super(key: key);
@@ -50,7 +51,9 @@ class _AboutUsPageState extends State<AboutUsPage> {
           ),
         ),
       ),
-      body:Padding(
+      body:
+          aboutUsModel != null ?
+      Padding(
         padding: const EdgeInsets.all(17.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,7 +66,8 @@ class _AboutUsPageState extends State<AboutUsPage> {
                 style: GoogleFonts.poppins(fontSize: 15, color: Color(0xff191723).withOpacity(.50), fontWeight: FontWeight.w600)),
           ],
         ),
-      ),
+      ):const Center(child: CircularProgressIndicator(
+            color: AppTheme.buttonColor,),),
     );
   }
 }

@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/bester_login_model.dart';
 import '../models/otpverify_model.dart';
 import '../models/send_alert_mode.dart';
+import '../models/send_eta_model.dart';
 import '../resources/helper.dart';
 
 Future<SendAlertModel> sendAlertRepo(
@@ -46,6 +47,46 @@ Future<SendAlertModel> sendAlertRepo(
   if (response.statusCode == 200 || response.statusCode == 400) {
     // Helpers.hideLoader(loader);
     return SendAlertModel.fromJson(json.decode(response.body));
+  } else {
+    Helpers.createSnackBar(context, response.body.toString());
+    // Helpers.hideLoader(loader);
+    throw Exception(response.body);
+  }
+}
+
+
+// send eta
+Future<SendEtaModel> sendEtaTimeRepo(
+    {
+      required String emsType,
+      required String etaTime,
+      required String alertStatus,
+      required String alertId,
+      required BuildContext context}) async {
+  var map = <String, dynamic>{};
+  map['emstype'] = emsType;
+  map['eta'] = etaTime;
+  map['alertstatus'] = alertStatus;
+  map['alertID'] = alertId;
+  log(map.toString());
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  OtpVerifyModel? user =
+  OtpVerifyModel.fromJson(jsonDecode(pref.getString('user_info')!));
+
+
+  final headers = {
+    HttpHeaders.contentTypeHeader: 'application/json',
+    HttpHeaders.acceptHeader: 'application/json',
+    HttpHeaders.authorizationHeader: "Bearer ${user.success!.token}"
+  };
+  print('REQUEST ::${jsonEncode(map)}');
+  // log(pref.getString('deviceId')!);
+  http.Response response = await http.post(Uri.parse(ApiUrls.sendEtaApiUrl),
+      body: jsonEncode(map), headers: headers);
+  log("ETA response.body....      ${response.body}");
+  if (response.statusCode == 200 || response.statusCode == 400) {
+    // Helpers.hideLoader(loader);
+    return SendEtaModel.fromJson(json.decode(response.body));
   } else {
     Helpers.createSnackBar(context, response.body.toString());
     // Helpers.hideLoader(loader);

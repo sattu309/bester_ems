@@ -8,10 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import '../conttroller/alert_handle_controller.dart';
 import '../models/emergency_alert_model.dart';
-import '../models/otpverify_model.dart';
 import 'alert_details_page.dart';
 import 'home_medical_emergency_page.dart';
 
@@ -23,19 +21,9 @@ class EmergencyAlertPage extends StatefulWidget {
 }
 
 class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
+  final alertHandleController = Get.put(AlertHandleController());
   Repositories repositories = Repositories();
   EmergencyAlertsModel? emergencyAlertsModel;
-  RxString userType = "".obs;
-  RxString userId = "".obs;
-  getUserType() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    OtpVerifyModel? user =
-        OtpVerifyModel.fromJson(jsonDecode(pref.getString("user_info")!));
-    userType.value = user.success!.utype.toString();
-    userId.value = user.success!.id.toString();
-    log("USER TYPE $userType.value.toString()");
-    log("USER ID $userId.value.toString()");
-  }
 
   getEmergencyAlertData() {
     repositories.getApi(url: ApiUrls.emergencyAlertApi).then((value) async {
@@ -47,8 +35,11 @@ class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
   @override
   void initState() {
     super.initState();
-    getUserType();
-    getEmergencyAlertData();
+    alertHandleController.getUserType();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getEmergencyAlertData();
+      // Add Your Code here.
+    });
   }
 
   @override
@@ -82,6 +73,7 @@ class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
                     ],
                   ),
                   // addHeight(2),
+
                   Expanded(
                     child: ListView.builder(
                         shrinkWrap: true,
@@ -90,30 +82,54 @@ class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
                         itemBuilder: (BuildContext, index) {
                           final emergencyData =
                               emergencyAlertsModel!.success![index];
-                           String formattedDate = DateFormat('MMM dd yy hh:mm a').format(DateTime.parse(emergencyData.createdAt!));
+                          String formattedDate = DateFormat('MMM dd yy hh:mm a')
+                              .format(DateTime.parse(emergencyData.createdAt!));
 
                           return InkWell(
                             onTap: () {
-                              if ((emergencyData.status == 1 ||
-                                      emergencyData.status == 4) &&
-                                  userType.value == "1") {
-                                Get.to(() => MedicalEmergencyPage(
-                                      emsTypeMedical:
-                                          emergencyData.emstype.toString(),
-                                      emsTypeInjury: '',
-                                      emsTypeMotor: '',
-                                      emsTypeSec: '',
-                                    ));
-                              } else {
-                                Get.to(() => AlertDetailsPage(
-                                      alertId: emergencyData!.id.toString(),
-                                      alertStatus:
-                                          emergencyData!.status.toString(),
-                                      emsType:
-                                          emergencyData!.emstype.toString(),
-                                  dateApi: formattedDate,
-                                    ));
-                              }
+                              log(alertHandleController.userType.value);
+                              ((emergencyData.status == 1 ||
+                                          emergencyData.status == 4) &&
+                                      alertHandleController.userType.value ==
+                                          "1")
+                                  ? Get.to(() => MedicalEmergencyPage(
+                                        emsTypeMedical:
+                                            emergencyData.emstype.toString(),
+                                        emsTypeInjury: '',
+                                        emsTypeMotor: '',
+                                        emsTypeSec: '',
+                                      ))
+                                  : Get.to(() => AlertDetailsPage(
+                                alertId: emergencyData!.id
+                                    .toString(),
+                                alertStatus: emergencyData!
+                                    .status
+                                    .toString(),
+                                emsType: emergencyData!.emstype
+                                    .toString(),
+                                dateApi: formattedDate,
+                                callback: getEmergencyAlertData,
+                              ));
+                              // ((((emergencyData.status == 1 ||
+                              //                     emergencyData.status == 4) &&
+                              //                 alertHandleController
+                              //                         .userType.value ==
+                              //                     1) ||
+                              //             (alertHandleController
+                              //                             .userType.value ==
+                              //                         "0" &&
+                              //                     (alertHandleController
+                              //                                 .userId.value ==
+                              //                             emergencyData
+                              //                                 .responderId ||
+                              //                         emergencyData
+                              //                                 .responderId ==
+                              //                             0)) &&
+                              //                 emergencyData.status != 5)
+                              //         ? false
+                              //         : true)
+                              //             ? null
+                              //             :
                             },
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,7 +169,6 @@ class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
                                               fontWeight: FontWeight.w500)),
                                     ),
                                     addWidth(width * .4),
-
                                     Text(
                                         emergencyData.status == 1
                                             ? "Pending"
@@ -166,10 +181,13 @@ class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
                                                         : "Completed",
                                         style: GoogleFonts.poppins(
                                             fontSize: 13,
-                                            color: (userId.value !=
+                                            color: (alertHandleController
+                                                            .userId.value !=
                                                         emergencyData
                                                             .responderId &&
-                                                    userType.value == 0 &&
+                                                    alertHandleController
+                                                            .userType.value ==
+                                                        0 &&
                                                     emergencyData.responderId >
                                                         0)
                                                 ? Colors.grey
@@ -197,47 +215,50 @@ class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
                                                                         0xff0b1338),
                                             fontWeight: FontWeight.w500)),
                                     addWidth(10),
-                          ((((emergencyData.status == 1 ||
-                          emergencyData.status == 4) &&
-                          userType.value == "1") ||
-                          (userType.value == "0" &&
-                          (userId.value ==
-                          emergencyData
-                              .responderId ||
-                          emergencyData
-                              .responderId ==
-                          0))) &&
-                          emergencyData.status != 5)?
-                                    const Icon(
-                                      Icons.arrow_forward_ios_sharp,
-                                      size: 15,
-                                      color:
-                                      Color(0xff666666),
-                                    ): const Icon(
-                              Icons.arrow_forward_ios_sharp,
-                              size: 15,
-                              color:
-                              Color(0xffFFFFFF)
-                          )
+                                    ((((emergencyData.status == 1 ||
+                                                        emergencyData.status ==
+                                                            4) &&
+                                                    alertHandleController
+                                                            .userType.value ==
+                                                        "1") ||
+                                                (alertHandleController
+                                                            .userType.value ==
+                                                        "0" &&
+                                                    (alertHandleController
+                                                                .userId.value ==
+                                                            emergencyData
+                                                                .responderId ||
+                                                        emergencyData
+                                                                .responderId ==
+                                                            0))) &&
+                                            emergencyData.status != 5)
+                                        ? const Icon(
+                                            Icons.arrow_forward_ios_sharp,
+                                            size: 15,
+                                            color: Color(0xff666666),
+                                          )
+                                        : const SizedBox()
                                   ],
                                 ),
 
-                                Text(
-                                    formattedDate.toString(),
+                                Text(formattedDate.toString(),
                                     //textAlign: TextAlign.center,
                                     style: GoogleFonts.poppins(
                                         fontSize: 11,
                                         color: Colors.grey,
                                         fontWeight: FontWeight.w500)),
-                                (userId.value != emergencyData.responderId &&
-                                    userType.value == "0" &&
-                                    emergencyData.responderId! > 0)?
-                                  Text(
-                                      "Responded by: ${emergencyData.responder.toString()}",
-                                      style: GoogleFonts.poppins(
-                                          fontSize: 11,
-                                          color: const Color(0xff666666),
-                                          fontWeight: FontWeight.w500)):SizedBox(),
+                                (alertHandleController.userId.value !=
+                                            emergencyData.responderId &&
+                                        alertHandleController.userType.value ==
+                                            "0" &&
+                                        emergencyData.responderId! > 0)
+                                    ? Text(
+                                        "Responded by: ${emergencyData.responder.toString()}",
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 11,
+                                            color: const Color(0xff666666),
+                                            fontWeight: FontWeight.w500))
+                                    : SizedBox(),
                                 addHeight(7),
                                 const Divider(
                                   height: 1,

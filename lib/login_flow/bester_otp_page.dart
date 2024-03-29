@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:ecom_demo/resources/add_text.dart';
 import 'package:ecom_demo/custom_bottom_bar.dart';
 import 'package:ecom_demo/resources/helper.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -158,7 +159,8 @@ class _BesterOtpPageState extends State<BesterOtpPage> {
                             addHeight(18),
                             CommonButtonGreen1(
                               title: 'CONFIRM OTP',
-                              onPressed: (){
+                              onPressed: () async {
+                                var fcmToekn = await FirebaseMessaging.instance.getToken();
                                 otpVerifyRepo(
                                     mobileNumber: widget.mobileNumber,
                                     otp: otpController.text,
@@ -167,7 +169,9 @@ class _BesterOtpPageState extends State<BesterOtpPage> {
                                     SharedPreferences pref = await SharedPreferences.getInstance();
                                     pref.setString("user_info", jsonEncode(value));
                                     Helpers.showToast("Login successful");
+                                    updateTokenRepo(fcmToken: fcmToekn!,);
                                     Get.off(()=> MyNavigationBar());
+
                                   }else{
                                     Helpers.showToast("Please Enter the Valid OTP");
                                   }

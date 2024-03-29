@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/alert_details_model.dart';
+import '../repository/send_alert_repo.dart';
 import '../resources/add_text.dart';
 import '../resources/app_theme.dart';
 import '../common_repository/api_repository.dart';
@@ -16,7 +17,8 @@ class AlertDetailsPage extends StatefulWidget {
   final String alertStatus;
   final String emsType;
   final String dateApi;
-  const AlertDetailsPage({Key? key, required this.alertId, required this.alertStatus, required this.emsType, required this.dateApi}) : super(key: key);
+  final Function callback;
+  const AlertDetailsPage({Key? key, required this.alertId, required this.alertStatus, required this.emsType, required this.dateApi, required this.callback}) : super(key: key);
 
   @override
   State<AlertDetailsPage> createState() => _AlertDetailsPageState();
@@ -41,6 +43,16 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
       setState(() {});
     });
   }
+
+  Future<void> openMap(double latitude, double longitude) async {
+    String googleUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    if (await canLaunch(googleUrl)) {
+      await launch(googleUrl);
+    } else {
+      throw 'Could not open the map.';
+    }
+  }
+
   makingPhoneCall(call) async {
     var url = Uri.parse(call);
     if (await canLaunchUrl(url)) {
@@ -171,7 +183,12 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                       // color: AppTheme.buttonColor
                     ),
                     child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          openMap(
+                              double.parse(alertDetailsModel!.success!.latitude.toString(),),
+                              double.parse(alertDetailsModel!.success!.longitude.toString())
+                          );
+                        },
                         style: ElevatedButton.styleFrom(
                           minimumSize:
                           Size(AddSize.screenWidth, AddSize.size50 * 1.1),
@@ -205,7 +222,7 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                     ),
                     child: ElevatedButton(
                         onPressed: () {
-                            makingPhoneCall("tel:+919988776633");
+                            makingPhoneCall("tel:+91${alertDetailsModel!.success!.mobile.toString()}");
                         },
                         style: ElevatedButton.styleFrom(
                           minimumSize:
@@ -277,7 +294,19 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                     ),
                     child: ElevatedButton(
                         onPressed: () {
-                          // buildShowDialog(context);
+                          sendEtaTimeRepo(
+                              emsType: widget.emsType.toString(),
+                              etaTime: "",
+                              alertStatus: "4",
+                              alertId: widget.alertId.toString(),
+                              context: context).then((value){
+                            if(value.success != null){
+                              widget.callback();
+                              Get.back();
+                            }else{
+                              print("Hellooo");
+                            }
+                          });
                         },
                         style: ElevatedButton.styleFrom(
                           minimumSize:
@@ -308,6 +337,19 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                     ),
                     child: ElevatedButton(
                         onPressed: () {
+                          sendEtaTimeRepo(
+                              emsType: widget.emsType.toString(),
+                              etaTime: "",
+                              alertStatus: "5",
+                              alertId: widget.alertId.toString(),
+                              context: context).then((value){
+                            if(value.success != null){
+                              widget.callback();
+                              Get.back();
+                            }else{
+                              print("Hellooo");
+                            }
+                          });
                         },
                         style: ElevatedButton.styleFrom(
                           minimumSize:
@@ -429,8 +471,8 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                                               ),
                                             ),
                                           ),
-                                          Expanded(
-                                            child: const Text("Minutes",
+                                          const Expanded(
+                                            child: Text("Minutes",
                                                 //textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                     fontSize: 15, color: Colors.black,
@@ -448,7 +490,19 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                                     ),
                                     child: ElevatedButton(
                                         onPressed: () {
-                                          Get.back();
+                                          sendEtaTimeRepo(
+                                              emsType: widget.emsType.toString(),
+                                              etaTime: dropdownvalue.value.toString(),
+                                              alertStatus: "4",
+                                              alertId: widget.alertId.toString(),
+                                              context: context).then((value){
+                                                if(value.success != null){
+                                                  widget.callback();
+                                                  Get.back();
+                                                }else{
+                                                  print("Hellooo");
+                                                }
+                                          });
                                         },
                                         style: ElevatedButton.styleFrom(
                                           minimumSize:

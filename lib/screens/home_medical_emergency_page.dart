@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:ecom_demo/resources/helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../common_repository/api_repository.dart';
+import '../models/get_active_alert_model.dart';
 import '../models/send_alert_mode.dart';
 import '../resources/add_text.dart';
 import '../resources/app_theme.dart';
@@ -37,20 +40,7 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
  RxString userMobile ="".obs;
  RxString userAppName ="".obs;
  RxString userToken ="".obs;
-
-
-
-
-
-  // Repositories repositories = Repositories();
-  // EmergencyAlertsModel? emergencyAlertsModel;
-  //
-  // getEmergencyAlertData(){
-  //   repositories.getApi(url:  ApiUrls.emergencyAlertApi).then((value){
-  //     emergencyAlertsModel = EmergencyAlertsModel.fromJson(jsonDecode(value));
-  //     setState(() {});
-  //   });
-  // }
+ RxString userSecAdmin ="".obs;
 
   userCheck() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -60,6 +50,7 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
     userToken.value = user.success!.token!;
     userMobile.value = user.success!.mobile!;
     userAppName.value = user.success!.aPPNAME!;
+    userSecAdmin.value = user.success!.showsec!;
     print("NAME OF USER IS $userName");
   }
 
@@ -72,6 +63,15 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
     print("ALERT ID IS 1");
     alertId.value = alertData.alertID!.toString();
     print("ALERT ID GOT IT $alertId");
+  }
+
+  Repositories repositories = Repositories();
+  GetActiveAlertModel? getActiveAlertModel;
+  getActiveAlertRepo(){
+    repositories.getApi(url: ApiUrls.getActiveAlertUrl).then((value){
+      getActiveAlertModel = GetActiveAlertModel.fromJson(jsonDecode(value));
+      setState(() {});
+    });
   }
 
   makingPhoneCall(call) async {
@@ -97,6 +97,7 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
     super.initState();
     userCheck();
     alertDetailsData();
+    getActiveAlertRepo();
     // getEmergencyAlertData();
   }
 
@@ -121,7 +122,7 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
         ),
       ),
       body:
-
+      getActiveAlertModel != null ?
       SingleChildScrollView(
         scrollDirection: Axis.vertical,
         physics: const BouncingScrollPhysics(),
@@ -203,17 +204,17 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            alertId.value == "1" ?
+                            getActiveAlertModel!.success!.status == 1 ?
                             Expanded(
-                              child: Text("Hold tight, Alert sent to $userAppName. Keep you phone close at all time, we will call you on $userMobile",
+                              child: Text("Hold tight, Alert sent to ${getActiveAlertModel!.success!.emstype == "sec" ? userSecAdmin : userAppName}Keep your phone close at all times, we will call you on $userMobile",
                                   style: GoogleFonts.poppins(
                                       fontSize: 17,
                                       color: Colors.black,
                                       fontWeight: FontWeight.w500)),
                             ):
-                            alertId.value != null ?
+                            getActiveAlertModel!.success!.status == 4  ?
                             Expanded(
-                              child: Text("Hold tight, Alert sent to $userAppName. Keep you phone close at all time, we will call you on $userMobile",
+                              child: Text("Hold tight, Alert sent to ${getActiveAlertModel!.success!.emstype == "sec" ? userSecAdmin : userAppName}Keep your phone close at all times, we will call you on $userMobile",
                                   style: GoogleFonts.poppins(
                                       fontSize: 17,
                                       color: Colors.black,
@@ -264,7 +265,8 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text("Bester EMS",
+                                Text(
+                                    "${getActiveAlertModel!.success!.emstype == "sec" ? userSecAdmin : userAppName}",
                                     style: GoogleFonts.poppins(
                                         fontSize: 19,
                                         color: Colors.black,
@@ -282,7 +284,7 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
                           height: 1,
                         ),
                         addHeight(15),
-                        alertId.value != null ?
+                        getActiveAlertModel!.success!.status == 1 || getActiveAlertModel!.success!.status == 4 ?
                         Column(
                           children: [
                             Container(
@@ -304,9 +306,10 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
 
                                     ).then((value){
                                       if(value.success != null){
-                                        Helpers.showToast(value.success.toString());
+                                      getActiveAlertRepo();
                                       }else{
-                                        Helpers.showToast(value.alertID.toString());
+                                        log("something went wrong");
+                                        //Helpers.showToast(value.alertID.toString());
                                       }
                                     });
                                   },
@@ -354,9 +357,10 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
 
                                     ).then((value){
                                       if(value.success != null){
-                                        Helpers.showToast(value.success.toString());
+                                        getActiveAlertRepo();
                                       }else{
-                                        Helpers.showToast(value.alertID.toString());
+                                        log("something went wrong");
+                                        //Helpers.showToast(value.alertID.toString());
                                       }
                                     });
                                   },
@@ -524,7 +528,9 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
               );
             })
 
-      )
+      ):
+      const Center(child: CircularProgressIndicator(
+        color: AppTheme.buttonColor,),)
     );
   }
 
