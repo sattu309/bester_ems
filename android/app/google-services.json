@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "194529937689",
+    "project_id": "testapp-ffd42",
+    "storage_bucket": "testapp-ffd42.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:194529937689:android:2a556d7d9f0cef03c75d88",
+        "android_client_info": {
+          "package_name": "com.example.ecom_demo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgwlT4C4R2TR0RLVwooLuSMNfKF6GCtjg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
