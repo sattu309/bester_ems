@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import '../conttroller/alert_handle_controller.dart';
+import '../custom_bottom_bar.dart';
 
 class NotificationService {
   final alertHandlerController = Get.put(AlertHandleController());
@@ -55,15 +56,14 @@ class NotificationService {
     });
   }
    Future<void> createNotificationChannel() async {
-    String soundFileName = alertHandlerController.userType.value == "0" ?'ring.wav':'admin.mp3';
-     AndroidNotificationChannel channel =  AndroidNotificationChannel(
+    String soundFileName = 'ring.wav';
+     AndroidNotificationChannel channel =   AndroidNotificationChannel(
       'channel_id_1', // Replace with your channel ID
       'Custom_channel', // Replace with your channel name
       description: 'Custom Channel Description', // Replace with your channel description
       importance: Importance.max,
       playSound: true,
-      sound:
-      RawResourceAndroidNotificationSound(soundFileName ),
+      sound: forSound.isNotEmpty ? const RawResourceAndroidNotificationSound("ring"):null,
     );
 
     await flutterLocalNotificationsPlugin
@@ -77,14 +77,13 @@ class NotificationService {
     required body,
     required payload,
   }) async {
-    String soundFileName = alertHandlerController.userType.value == "0" ?'ring.wav':'admin.mp3';
-    AndroidNotificationDetails androidNotificationDetails =   AndroidNotificationDetails(
+    AndroidNotificationDetails androidNotificationDetails =    AndroidNotificationDetails(
     "demo_100",
     "demo_app",
     channelDescription: "This is custom sound msg",
     priority: Priority.high,
     playSound: true,
-    sound:  RawResourceAndroidNotificationSound(soundFileName), // Default sound
+    sound: forSound.isNotEmpty ? const RawResourceAndroidNotificationSound("ring"):null, // Default sound
     // sound:  RawResourceAndroidNotificationSound(soundFileName), // Default sound
     importance: Importance.max,
 

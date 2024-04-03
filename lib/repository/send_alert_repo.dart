@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/bester_login_model.dart';
+import '../models/emergency_alert_model.dart';
 import '../models/otpverify_model.dart';
 import '../models/send_alert_mode.dart';
 import '../models/send_eta_model.dart';
@@ -90,6 +91,28 @@ Future<SendEtaModel> sendEtaTimeRepo(
   } else {
     Helpers.createSnackBar(context, response.body.toString());
     // Helpers.hideLoader(loader);
+    throw Exception(response.body);
+  }
+}
+
+// get alert data
+
+Future<EmergencyAlertsModel> getEmergencyAlertRepo() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  OtpVerifyModel? user =
+  OtpVerifyModel.fromJson(jsonDecode(pref.getString('user_info')!));
+  final headers = {
+    HttpHeaders.contentTypeHeader: 'application/json',
+    HttpHeaders.acceptHeader: 'application/json',
+    HttpHeaders.authorizationHeader: 'Bearer ${user.success!.token}'
+  };
+  http.Response response =
+  await http.get(Uri.parse(ApiUrls.emergencyAlertApi), headers: headers);
+
+  if (response.statusCode == 200) {
+    print("EMERGENCY ALERT REPO ...${response.body}");
+    return EmergencyAlertsModel.fromJson(json.decode(response.body));
+  } else {
     throw Exception(response.body);
   }
 }

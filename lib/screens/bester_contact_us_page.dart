@@ -38,16 +38,31 @@ class _BesterContactUsPageState extends State<BesterContactUsPage> {
   }
 
   Future<void> shareOnWhatsApp(String phone) async {
-    var whatsappUrl = "whatsapp://send?phone=$phone";
+    String formattedPhone = phone.replaceAll(RegExp(r'[^\d+]'), '');
 
-    var encodedPhone = Uri.encodeFull(whatsappUrl);
-    var whatsappUrl1 = "https://wa.me/$encodedPhone";
-    if (await canLaunch(whatsappUrl1)) {
-      await launch(whatsappUrl1);
+    var whatsappUrl = "whatsapp://send?phone=$formattedPhone";
+
+    if (await canLaunch(whatsappUrl)) {
+      await launch(whatsappUrl);
     } else {
-      throw 'Could not launch WhatsApp.';
+      var whatsappWebUrl = "https://wa.me/$formattedPhone";
+      if (await canLaunch(whatsappWebUrl)) {
+        await launch(whatsappWebUrl);
+      } else {
+        throw 'Could not launch WhatsApp.';
+      }
     }
   }
+
+  void sendEmail() async {
+    final Uri params = Uri(
+      scheme: 'mailto',
+      path: supportModel!.success!.email.toString(),
+      query: 'subject=Hello%20from%20Flutter',
+    );
+    await launch(params.toString());
+  }
+
 
 @override
   void initState() {
@@ -92,9 +107,15 @@ class _BesterContactUsPageState extends State<BesterContactUsPage> {
               height: 1,
               thickness: 1.5,
             ),
-            userInfo(
-                iconData: Icons.mail,
-                title: supportModel!.success!.email.toString()),
+            GestureDetector(
+              onTap: (){
+                print("hey man");
+                sendEmail();
+              },
+              child: userInfo(
+                  iconData: Icons.mail,
+                  title: supportModel!.success!.email.toString()),
+            ),
             addHeight(5),
             const Divider(
               height: 1,

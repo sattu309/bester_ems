@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:ecom_demo/push_notification/notifcation_service.dart';
 import 'package:ecom_demo/resources/add_text.dart';
@@ -12,12 +13,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'conttroller/alert_data_controller.dart';
 import 'conttroller/alert_handle_controller.dart';
 import 'conttroller/get_current_location.dart';
 import 'conttroller/main_homecontroller.dart';
 import 'login_flow/bester_login_page.dart';
 import 'models/otpverify_model.dart';
 
+var forSound = "";
 class MyNavigationBar extends StatefulWidget {
   MyNavigationBar ({key}) : super(key: key);
 
@@ -29,6 +32,7 @@ class _MyNavigationBarState extends State<MyNavigationBar > {
   final controller = Get.put(MainHomeController());
   final alertHandlerController = Get.put(AlertHandleController());
   final locationController = Get.put(LocationController());
+  final emergencyDataController = Get.put(AlertDataController());
   manageNotification() async {
     print("function call");
     NotificationService().createNotificationChannel();
@@ -36,6 +40,8 @@ class _MyNavigationBarState extends State<MyNavigationBar > {
       // Handle foreground messages
       print("Foreground message received: ${message.notification?.body}");
       if (message.data.isNotEmpty) {
+        forSound = message.data['sound'];
+        log(forSound);
         print("Payload data: ${message.data}");
         print("Payload data: ${message.notification!.title.toString()}");
         print("Payload data: ${message.notification!.body.toString()}");
@@ -65,43 +71,47 @@ class _MyNavigationBarState extends State<MyNavigationBar > {
                             fontWeight: FontWeight.w600)),
                     addHeight(5),
                     Text(message.notification!.body.toString().capitalizeFirst.toString(),
-                        //textAlign: TextAlign.center,
+                        textAlign: TextAlign.center,
                         style: const TextStyle(
                             fontSize: 13, color: Colors.black,
                             fontWeight: FontWeight.w600)),
 
                     addHeight(30),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        // color: AppTheme.buttonColor
-                      ),
-                      child: ElevatedButton(
-                          onPressed: () {
-                            Get.back();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            minimumSize:
-                            Size(AddSize.screenWidth, AddSize.size50 * 1.1),
-                            backgroundColor: AppTheme.buttonColor,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8), // <-- Radius
+                    //Obx((){
+                  //    return
+                  Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          // color: AppTheme.buttonColor
+                        ),
+                        child: ElevatedButton(
+                            onPressed: () {
+                              emergencyDataController.getEmergencyData();
+                              Get.back();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              minimumSize:
+                              Size(AddSize.screenWidth, AddSize.size50 * 1.1),
+                              backgroundColor: AppTheme.buttonColor,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8), // <-- Radius
+                              ),
+                              // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
-                            // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text("OK",
-                                  style:  GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.white,
-                                      letterSpacing: .5,
-                                      fontSize: 15)),
-                            ],
-                          )),
-                    ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text("OK",
+                                    style:  GoogleFonts.poppins(
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white,
+                                        letterSpacing: .5,
+                                        fontSize: 15)),
+                              ],
+                            )),
+                      ),
+                    //}),
                     addHeight(5),
                   ],
                 ),
@@ -117,6 +127,7 @@ class _MyNavigationBarState extends State<MyNavigationBar > {
       print("App opened by notification: ${message.notification?.body}");
       // print("App opened by notification: ${message.data[].}");
       if (message.data.isNotEmpty) {
+        forSound = message.data['sound'];
         final forNavigate = message.data['screen_name'];
         // print("Payload data: ${message.data['screen_name']}");
         // NotificationService.showNotification(message);

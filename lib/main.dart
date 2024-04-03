@@ -54,13 +54,13 @@ getFcmToken() async {
   userTypeController.getUserType();
   var fcmToekn = await FirebaseMessaging.instance.getToken();
   print("FCM TOEKN IS $fcmToekn");
-  String soundFileName = userTypeController.userType.value == "0" ?'ring.wav':'admin.mp3';
-  AndroidNotificationDetails androidNotificationDetails =  AndroidNotificationDetails(
+  AndroidNotificationDetails androidNotificationDetails =
+  const AndroidNotificationDetails(
     "demo_22",
     "demo_app",
     priority: Priority.high,
     playSound: true,
-    sound: RawResourceAndroidNotificationSound(soundFileName), // Default sound
+    sound: RawResourceAndroidNotificationSound('ring'), // Default sound
     importance: Importance.max,
   );
   NotificationDetails(android: androidNotificationDetails);

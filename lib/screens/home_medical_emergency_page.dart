@@ -4,20 +4,15 @@ import 'package:ecom_demo/resources/helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../common_repository/api_repository.dart';
+import '../conttroller/alert_data_controller.dart';
 import '../conttroller/alert_handle_controller.dart';
 import '../models/get_active_alert_model.dart';
-import '../models/send_alert_mode.dart';
 import '../resources/add_text.dart';
 import '../resources/app_theme.dart';
-import '../common_repository/api_repository.dart';
 import '../conttroller/get_current_location.dart';
 import '../resources/dimension.dart';
-import '../models/emergency_alert_model.dart';
-import '../models/otpverify_model.dart';
-import '../repository/push_notification_api.dart';
 import '../repository/send_alert_repo.dart';
 import '../resources/api_urls.dart';
 
@@ -26,15 +21,14 @@ class MedicalEmergencyPage extends StatefulWidget {
   final String emsTypeMotor;
   final String emsTypeInjury;
   final String emsTypeSec;
-  final Function? callback;
-  const MedicalEmergencyPage({Key? key, required this.emsTypeMedical, required this.emsTypeInjury, required this.emsTypeMotor, required this.emsTypeSec, required this.callback,}) : super(key: key);
+  const MedicalEmergencyPage({Key? key, required this.emsTypeMedical, required this.emsTypeInjury, required this.emsTypeMotor, required this.emsTypeSec,}) : super(key: key);
 
   @override
   State<MedicalEmergencyPage> createState() => _MedicalEmergencyPageState();
 }
 
 class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
-
+  final emergencyDataController = Get.put(AlertDataController());
   final locationController = Get.put(LocationController());
   final userDataController = Get.put(AlertHandleController());
 
@@ -69,6 +63,7 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
   void initState() {
     super.initState();
     locationController.getLocation();
+    emergencyDataController.getEmergencyData();
     getActiveAlertRepo();
   }
 
@@ -281,7 +276,8 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
                                     ).then((value){
                                       if(value.success != null){
                                       getActiveAlertRepo();
-                                      widget.callback!();
+                                      emergencyDataController.getEmergencyData();
+                                      setState(() {});
                                       }else{
                                         log("something went wrong");
                                         //Helpers.showToast(value.alertID.toString());
@@ -333,7 +329,8 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
                                     ).then((value){
                                       if(value.success != null){
                                         getActiveAlertRepo();
-                                        widget.callback!();
+                                        emergencyDataController.getEmergencyData();
+                                        setState(() {});
                                       }else{
                                         log("something went wrong");
                                         //Helpers.showToast(value.alertID.toString());
@@ -383,10 +380,10 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
                                     alertID: ""
                                 ).then((value) async {
                                   if(value.success != null) {
-                                    widget.callback!();
-                                    Helpers.showToast(value.success.toString());
-                                    // buildShowDialog(context);
                                     getActiveAlertRepo();
+                                    emergencyDataController.getEmergencyData();
+                                    Helpers.showToast(value.success.toString());
+                                    setState(() {});
 
                                   }
                                   else{

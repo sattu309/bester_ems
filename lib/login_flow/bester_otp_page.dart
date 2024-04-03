@@ -220,7 +220,7 @@ class _BesterOtpPageState extends State<BesterOtpPage> {
                                       updateTokenRepo(
                                         fcmToken: fcmToekn!,
                                       );
-                                      Get.off(() => MyNavigationBar());
+                                      Get.offAll(() => MyNavigationBar());
                                     } else {
                                       Helpers.showToast(
                                           "Please Enter the Valid OTP");

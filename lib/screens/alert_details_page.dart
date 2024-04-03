@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../conttroller/alert_data_controller.dart';
 import '../models/alert_details_model.dart';
 import '../repository/send_alert_repo.dart';
 import '../resources/add_text.dart';
@@ -17,14 +18,14 @@ class AlertDetailsPage extends StatefulWidget {
   final String alertStatus;
   final String emsType;
   final String dateApi;
-  final Function callback;
-  const AlertDetailsPage({Key? key, required this.alertId, required this.alertStatus, required this.emsType, required this.dateApi, required this.callback}) : super(key: key);
+  const AlertDetailsPage({Key? key, required this.alertId, required this.alertStatus, required this.emsType, required this.dateApi,}) : super(key: key);
 
   @override
   State<AlertDetailsPage> createState() => _AlertDetailsPageState();
 }
 
 class _AlertDetailsPageState extends State<AlertDetailsPage> {
+  final emergencyDataController = Get.put(AlertDataController());
   Repositories repositories = Repositories();
   AlertDetailsModel? alertDetailsModel;
   RxString dropdownvalue = '60'.obs;
@@ -65,6 +66,7 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
   void initState() {
     super.initState();
     alertDetailsRepo();
+    emergencyDataController.getEmergencyData();
   }
 
   @override
@@ -259,6 +261,7 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                     child: ElevatedButton(
                         onPressed: () {
                           buildShowDialog(context);
+                          emergencyDataController.getEmergencyData();
                         },
                         style: ElevatedButton.styleFrom(
                           minimumSize:
@@ -301,7 +304,8 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                               alertId: widget.alertId.toString(),
                               context: context).then((value){
                             if(value.success != null){
-                              widget.callback();
+                              alertDetailsRepo();
+                              emergencyDataController.getEmergencyData();
                               // Get.back();
                             }else{
                               print("Hellooo");
@@ -344,7 +348,7 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                               alertId: widget.alertId.toString(),
                               context: context).then((value){
                             if(value.success != null){
-                              widget.callback();
+                              emergencyDataController.getEmergencyData();
                               Get.back();
                             }else{
                               print("Hellooo");
@@ -497,7 +501,7 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                                               alertId: widget.alertId.toString(),
                                               context: context).then((value){
                                                 if(value.success != null){
-                                                  widget.callback();
+                                                  emergencyDataController.getEmergencyData();
                                                   Get.back();
                                                 }else{
                                                   print("Hellooo");

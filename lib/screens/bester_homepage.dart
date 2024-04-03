@@ -43,7 +43,7 @@ class _BesterHomePageState extends State<BesterHomePage> {
                 return
                 Column(
                   children: [
-                    addHeight(20),
+                    addHeight(50),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Image.asset("assets/images/bester.png",),
@@ -66,7 +66,7 @@ class _BesterHomePageState extends State<BesterHomePage> {
                           emsTypeMedical: 'medical',
                           emsTypeInjury: '',
                           emsTypeMotor: '',
-                          emsTypeSec: '', callback: null,));
+                          emsTypeSec: '',));
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 3,horizontal: 3),
@@ -103,7 +103,7 @@ class _BesterHomePageState extends State<BesterHomePage> {
                           emsTypeMedical: '',
                           emsTypeInjury: '',
                           emsTypeMotor: 'motor',
-                          emsTypeSec: '', callback: null,));
+                          emsTypeSec: '',));
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 3,horizontal: 3),
@@ -140,7 +140,7 @@ class _BesterHomePageState extends State<BesterHomePage> {
                           emsTypeMedical: '',
                           emsTypeInjury: 'injury',
                           emsTypeMotor: '',
-                          emsTypeSec: '', callback: null,));
+                          emsTypeSec: '',));
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 3,horizontal: 3),
@@ -179,7 +179,7 @@ class _BesterHomePageState extends State<BesterHomePage> {
                           emsTypeMedical: '',
                           emsTypeInjury: '',
                           emsTypeMotor: '',
-                          emsTypeSec: 'sec', callback: null,));
+                          emsTypeSec: 'sec',));
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 3,horizontal: 3),

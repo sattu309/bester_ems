@@ -19,6 +19,7 @@ class BesterProfilePage extends StatefulWidget {
 class _BesterProfilePageState extends State<BesterProfilePage> {
   final userDataController = Get.put(AlertHandleController());
   Repositories repositories = Repositories();
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -31,8 +32,8 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(child: Column(
-
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 addHeight(height* .1),
                 Image.asset("assets/images/bester.png", height: 100,),
@@ -62,7 +63,8 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
                  const Icon(Icons.dashboard),
                  addWidth(6),
                  Text(
-                     userDataController.companyName.value.toString(),
+                   userDataController.companyName.value != null ?
+                     userDataController.companyName.value.toString() : "Ssspl",
                      //textAlign: TextAlign.center,
                      style: GoogleFonts.poppins(fontSize: 14, color:  Color(0xff191723), fontWeight: FontWeight.w500)),
                ],
@@ -74,7 +76,7 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
                 ),
 
               ],
-            )),
+            ),
             addHeight(30),
             GestureDetector(
               onTap: (){
@@ -88,8 +90,8 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
                   addWidth(20),
                   Text("HELP & SUPPORT",
                       //textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(fontSize: 15, color:
-                      const Color(0xff6F7183), fontWeight: FontWeight.w500)),
+                      style: GoogleFonts.poppins(fontSize: 16, color:
+                      const Color(0xff6F7183), fontWeight: FontWeight.w600)),
                 ],
               ),
             ),
@@ -101,8 +103,8 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
                 addWidth(20),
                 Text("SERVICE",
                     //textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(fontSize: 15, color:
-                    const Color(0xff6F7183), fontWeight: FontWeight.w500)),
+                    style: GoogleFonts.poppins(fontSize: 16, color:
+                    const Color(0xff6F7183), fontWeight: FontWeight.w600)),
               ],
             ),
             addHeight(30),
@@ -117,8 +119,8 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
                   addWidth(20),
                   Text("ABOUT",
                       //textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(fontSize: 15,
-                          color:  Color(0xff6F7183), fontWeight: FontWeight.w500)),
+                      style: GoogleFonts.poppins(fontSize: 16,
+                          color:  Color(0xff6F7183), fontWeight: FontWeight.w600)),
                 ],
               ),
             ),
@@ -134,8 +136,8 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
                   addWidth(20),
                   Text("LOGOUT",
                       //textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(fontSize: 15,
-                          color:  const Color(0xff6F7183), fontWeight: FontWeight.w500)),
+                      style: GoogleFonts.poppins(fontSize: 16,
+                          color:  const Color(0xff6F7183), fontWeight: FontWeight.w600)),
                 ],
               ),
             ),
@@ -152,27 +154,11 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
              children: [
                Image.asset("assets/images/ring.png",height: 15,width: 15,),
                addWidth(8),
-               Text("944788898",
+               Text(
+                   userDataController.mobile.value.toString(),
                    //textAlign: TextAlign.center,
                    style: GoogleFonts.poppins(fontSize: 14, color:  Color(0xff191723), fontWeight: FontWeight.w500)),
              ],
            );
   }
-}
-Widget drawerTile({required bool active, required String title, required Icon icon, required VoidCallback onTap}) {
-  return
-    ListTile(
-    selectedTileColor: Colors.yellow.withOpacity(0.95),
-    leading: icon,
-    minLeadingWidth: 30,
-    title: Text(
-      title,
-      style: const TextStyle(
-        fontSize: 14,
-        color: Color(0xFF4F535E),
-        fontWeight: FontWeight.w400,
-      ),
-    ),
-    onTap: active ? onTap : null,
-  );
 }
