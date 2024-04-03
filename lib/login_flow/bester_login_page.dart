@@ -106,12 +106,15 @@ class _BesterLoginPageState extends State<BesterLoginPage> {
                               style: GoogleFonts.poppins(fontSize: 14, color: const Color(0xff191723), fontWeight: FontWeight.w500)),
                            addHeight(5),
                           Obx((){
-                            return  Text(
-                                errorText.value != "null" ?
-                                errorText.value:"",
-                                textAlign: TextAlign.center,
-                                //maxLines: 2,
-                                style: GoogleFonts.poppins(fontSize: 13, color: AppTheme.buttonColor,  fontWeight: FontWeight.w400));
+                            return  Padding(
+                              padding: const EdgeInsets.only(left: 4,right:  4),
+                              child: Text(
+                                  errorText.value != "null" ?
+                                  errorText.value:"",
+                                  textAlign: TextAlign.center,
+                                  //maxLines: 2,
+                                  style: GoogleFonts.poppins(fontSize: 13, color: AppTheme.buttonColor,  fontWeight: FontWeight.w400)),
+                            );
                           }
 
                           ),

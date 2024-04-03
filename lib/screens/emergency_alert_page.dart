@@ -32,6 +32,8 @@ class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
     });
   }
 
+
+
   @override
   void initState() {
     super.initState();
@@ -47,7 +49,7 @@ class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
-      //backgroundColor: Colors.white,
+      backgroundColor: Colors.white,
       body: emergencyAlertsModel != null
           ? Padding(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
@@ -98,8 +100,11 @@ class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
                                         emsTypeInjury: '',
                                         emsTypeMotor: '',
                                         emsTypeSec: '',
-                                      ))
-                                  : Get.to(() => AlertDetailsPage(
+                                callback: getEmergencyAlertData,
+                              ))
+                                  :
+                              (emergencyData.status == 2 || emergencyData.status == 5) ? null :
+                              Get.to(() => AlertDetailsPage(
                                 alertId: emergencyData!.id
                                     .toString(),
                                 alertStatus: emergencyData!
@@ -141,12 +146,12 @@ class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
                                 addHeight(7),
                                 Text(
                                     emergencyData.emstype == "medical"
-                                        ? "Medical Emergency"
-                                        : emergencyData.emstype == "motor"
-                                            ? "Motor Accident"
+                                        ? "MEDICAL EMERGENCY"
+                                        : emergencyData.emstype == "MOTOR"
+                                            ? "MOTOR ACCIDENT"
                                             : emergencyData.emstype == "sec"
-                                                ? "Security Emergency"
-                                                : "Injury on Duty",
+                                                ? "SECURITY EMERGENCY"
+                                                : "INJURY ON DUTY",
 
                                     //textAlign: TextAlign.center,
                                     style: GoogleFonts.poppins(
@@ -155,32 +160,32 @@ class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
                                         fontWeight: FontWeight.w600)),
                                 //  addHeight(1),
                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Expanded(
-                                      child: Text(
-                                          emergencyData.name
-                                              .toString()
-                                              .capitalizeFirst
-                                              .toString(),
-                                          //textAlign: TextAlign.center,
-                                          style: GoogleFonts.poppins(
-                                              fontSize: 13,
-                                              color: Colors.grey,
-                                              fontWeight: FontWeight.w500)),
-                                    ),
-                                    addWidth(width * .4),
+                                    Text(
+                                        emergencyData.name
+                                            .toString()
+                                            .capitalizeFirst
+                                            .toString(),
+                                        //textAlign: TextAlign.center,
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 14,
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w500)),
+                                   addWidth(width * .1),
                                     Text(
                                         emergencyData.status == 1
-                                            ? "Pending"
+                                            ? "PENDING"
                                             : emergencyData.status == 2
-                                                ? "Cancelled"
+                                                ? "CANCELLED"
                                                 : emergencyData.status == 3
-                                                    ? "Out of Emergency"
+                                                    ? "         OUT OF EMERGENCY"
                                                     : emergencyData.status == 4
-                                                        ? "Help Dispatched"
-                                                        : "Completed",
+                                                        ? "HELP DISPATCHED"
+                                                        : "COMPLETED",
                                         style: GoogleFonts.poppins(
-                                            fontSize: 13,
+                                            fontSize: 14,
                                             color: (alertHandleController
                                                             .userId.value !=
                                                         emergencyData
@@ -214,31 +219,23 @@ class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
                                                                     : const Color(
                                                                         0xff0b1338),
                                             fontWeight: FontWeight.w500)),
-                                    addWidth(10),
+                                  //  addWidth(10),
                                     ((((emergencyData.status == 1 ||
                                                         emergencyData.status ==
                                                             4) &&
                                                     alertHandleController
                                                             .userType.value ==
                                                         "1") ||
-                                                (alertHandleController
-                                                            .userType.value ==
-                                                        "0" &&
-                                                    (alertHandleController
-                                                                .userId.value ==
-                                                            emergencyData
-                                                                .responderId ||
-                                                        emergencyData
-                                                                .responderId ==
-                                                            0))) &&
-                                            emergencyData.status != 5)
+                                                ((emergencyData.status == 1 ||
+                                                      emergencyData.status == 4) && alertHandleController.userType.value ==
+                                                        "0"))
                                         ? const Icon(
                                             Icons.arrow_forward_ios_sharp,
                                             size: 15,
                                             color: Color(0xff666666),
                                           )
                                         : const SizedBox()
-                                  ],
+                                    )],
                                 ),
 
                                 Text(formattedDate.toString(),
@@ -258,7 +255,7 @@ class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
                                             fontSize: 11,
                                             color: const Color(0xff666666),
                                             fontWeight: FontWeight.w500))
-                                    : SizedBox(),
+                                    : const SizedBox(),
                                 addHeight(7),
                                 const Divider(
                                   height: 1,

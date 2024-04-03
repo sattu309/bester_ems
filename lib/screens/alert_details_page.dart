@@ -302,7 +302,7 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                               context: context).then((value){
                             if(value.success != null){
                               widget.callback();
-                              Get.back();
+                              // Get.back();
                             }else{
                               print("Hellooo");
                             }

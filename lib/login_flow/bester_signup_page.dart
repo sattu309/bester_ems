@@ -114,12 +114,14 @@ class _BesterSignUpPageState extends State<BesterSignUpPage> {
                               ),
                               addHeight(8),
                               CommonTextFieldWidget(
+                                length: 10,
                                 controller: mobileController,
                                 hint: "Mobile Number",
                                 keyboardType: TextInputType.number,
                                 validator: MultiValidator([
                                   RequiredValidator(
                                       errorText: 'Please Enter Your Mobile Number'),
+
                                 ]),
                               ),
                               addHeight(8),
@@ -130,6 +132,7 @@ class _BesterSignUpPageState extends State<BesterSignUpPage> {
                                 validator: MultiValidator([
                                   RequiredValidator(
                                       errorText: 'Please Enter Your Password'),
+                                  EmailValidator(errorText: 'enter a valid email address'),
                                 ]),
                               ),
                               addHeight(8),

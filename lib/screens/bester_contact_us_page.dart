@@ -1,7 +1,13 @@
+import 'dart:convert';
+
+import 'package:ecom_demo/common_repository/api_repository.dart';
+import 'package:ecom_demo/resources/api_urls.dart';
 import 'package:ecom_demo/resources/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../models/supprt_model.dart';
 import '../resources/add_text.dart';
 
 class BesterContactUsPage extends StatefulWidget {
@@ -12,6 +18,42 @@ class BesterContactUsPage extends StatefulWidget {
 }
 
 class _BesterContactUsPageState extends State<BesterContactUsPage> {
+
+  Repositories repositories = Repositories();
+  SupportModel? supportModel;
+  getSupportData(){
+    repositories.getApi(url: ApiUrls.supportUrl).then((value){
+      supportModel= SupportModel.fromJson(jsonDecode(value));
+      setState(() {});
+    });
+  }
+
+  makingPhoneCall(call) async {
+    var url = Uri.parse(call);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Future<void> shareOnWhatsApp(String phone) async {
+    var whatsappUrl = "whatsapp://send?phone=$phone";
+
+    var encodedPhone = Uri.encodeFull(whatsappUrl);
+    var whatsappUrl1 = "https://wa.me/$encodedPhone";
+    if (await canLaunch(whatsappUrl1)) {
+      await launch(whatsappUrl1);
+    } else {
+      throw 'Could not launch WhatsApp.';
+    }
+  }
+
+@override
+  void initState() {
+    super.initState();
+    getSupportData();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,15 +71,22 @@ class _BesterContactUsPageState extends State<BesterContactUsPage> {
           ),
         ),
       ),
-      body: Padding(
+      body: supportModel != null ?
+      Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset("assets/images/bester.png", height: 150,width: 150,),
-           userInfo(
-               iconData: Icons.call,
-               title: "95348534348"),
+           addHeight(30),
+           GestureDetector(
+             onTap: (){
+               makingPhoneCall("tel:+91${supportModel!.success!.phone.toString()}");
+             },
+             child: userInfo(
+                 iconData: Icons.call,
+                 title: supportModel!.success!.phone.toString()),
+           ),
             addHeight(5),
             const Divider(
               height: 1,
@@ -45,7 +94,7 @@ class _BesterContactUsPageState extends State<BesterContactUsPage> {
             ),
             userInfo(
                 iconData: Icons.mail,
-                title: "demo@gmail.com"),
+                title: supportModel!.success!.email.toString()),
             addHeight(5),
             const Divider(
               height: 1,
@@ -53,7 +102,7 @@ class _BesterContactUsPageState extends State<BesterContactUsPage> {
             ),
             userInfo(
                 iconData: Icons.location_on,
-                title: "H 23 Swaj farm Near Hub"),
+                title: supportModel!.success!.address.toString()),
             addHeight(5),
             const Divider(
               height: 1,
@@ -61,7 +110,7 @@ class _BesterContactUsPageState extends State<BesterContactUsPage> {
             ),
             userInfo(
                 iconData: Icons.wordpress,
-                title: "https://www.besterems.co.za"),
+                title: supportModel!.success!.web.toString()),
             addHeight(5),
             const Divider(
               height: 1,
@@ -71,30 +120,35 @@ class _BesterContactUsPageState extends State<BesterContactUsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-              Image.asset("assets/images/whatsapp.png",
-                height: 20,width: 20, color: AppTheme.buttonColor,),
-              addWidth(2),
-              Image.asset("assets/images/fb.png",height: 16,width: 20,color: AppTheme.buttonColor),
-                addWidth(2),
-                Image.asset("assets/images/logo-tiktok.png",height: 16,width: 20,color: AppTheme.buttonColor),
+              GestureDetector(
+                onTap: (){
+                  shareOnWhatsApp(supportModel!.success!.phone.toString());
+                },
+                child: Image.asset("assets/images/whatsapp.png",
+                  height: 22,width: 22, color: AppTheme.buttonColor,),
+              ),
+              addWidth(5),
+              Image.asset("assets/images/fb.png",height: 20,width: 20,color: AppTheme.buttonColor),
+                addWidth(5),
+                Image.asset("assets/images/logo-tiktok.png",height: 20,width: 20,color: AppTheme.buttonColor),
               ],
             ),
-            addHeight(35),
+            addHeight(50),
             Text(
               "App Version: 1.0.11",
               style: TextStyle(fontSize: 14, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
             ),
            addHeight(20),
             Image.asset("assets/images/bitlogiq.png",
-               height: 50,width: 140,
+               height: 55,width: 140,
             ),
             Text(
-              "https://www.besterems.co.za",
+              supportModel!.success!.web.toString(),
               style: TextStyle(fontSize: 12, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
             ),
           ],
         ),
-      ),
+      ):const Center(child: CircularProgressIndicator(color: AppTheme.buttonColor,),)
     );
   }
   
@@ -107,7 +161,7 @@ class _BesterContactUsPageState extends State<BesterContactUsPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0,vertical: 12),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(iconData, size: iconSize, color: iconColor),
           const SizedBox(width: 8),
@@ -115,7 +169,7 @@ class _BesterContactUsPageState extends State<BesterContactUsPage> {
             child:
             Text(
               title,
-              style: TextStyle(fontSize: 14, color: textColor, fontWeight: FontWeight.w500),
+              style: TextStyle(fontSize: 15, color: textColor, fontWeight: FontWeight.w500),
             ),
           ),
         ],

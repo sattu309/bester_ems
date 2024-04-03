@@ -19,7 +19,7 @@ Future<SendAlertModel> sendAlertRepo(
       required String emerType,
       required String userAddress,
       required String alertStatus,
-      required String alertId,
+      required String alertID,
       required BuildContext context}) async {
   var map = <String, dynamic>{};
   map['latitude'] = userLat;
@@ -27,7 +27,7 @@ Future<SendAlertModel> sendAlertRepo(
   map['emstype'] = emerType;
   map['address'] = userAddress;
   map['alertstatus'] = alertStatus;
-  map['alertId'] = alertId;
+  map['alertID'] = alertID;
   log(map.toString());
   SharedPreferences pref = await SharedPreferences.getInstance();
   OtpVerifyModel? user =

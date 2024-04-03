@@ -1,14 +1,21 @@
 import 'dart:convert';
 
+import 'package:ecom_demo/push_notification/notifcation_service.dart';
+import 'package:ecom_demo/resources/add_text.dart';
+import 'package:ecom_demo/resources/app_theme.dart';
+import 'package:ecom_demo/resources/dimension.dart';
 import 'package:ecom_demo/screens/bester_homepage.dart';
 import 'package:ecom_demo/screens/bester_profile_page.dart';
 import 'package:ecom_demo/screens/emergency_alert_page.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'conttroller/alert_handle_controller.dart';
 import 'conttroller/get_current_location.dart';
 import 'conttroller/main_homecontroller.dart';
+import 'login_flow/bester_login_page.dart';
 import 'models/otpverify_model.dart';
 
 class MyNavigationBar extends StatefulWidget {
@@ -22,11 +29,121 @@ class _MyNavigationBarState extends State<MyNavigationBar > {
   final controller = Get.put(MainHomeController());
   final alertHandlerController = Get.put(AlertHandleController());
   final locationController = Get.put(LocationController());
+  manageNotification() async {
+    print("function call");
+    NotificationService().createNotificationChannel();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      // Handle foreground messages
+      print("Foreground message received: ${message.notification?.body}");
+      if (message.data.isNotEmpty) {
+        print("Payload data: ${message.data}");
+        print("Payload data: ${message.notification!.title.toString()}");
+        print("Payload data: ${message.notification!.body.toString()}");
+        showDialog(context: context, builder: (BuildContext){
+          return Dialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50)
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    addHeight(10),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset("assets/images/bester.png"),
+                    ),
+                    addHeight(10),
+                    Text(message.notification!.title.toString().capitalizeFirst.toString(),
+                        //textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontSize: 13, color: Colors.black,
+                            fontWeight: FontWeight.w600)),
+                    addHeight(5),
+                    Text(message.notification!.body.toString().capitalizeFirst.toString(),
+                        //textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontSize: 13, color: Colors.black,
+                            fontWeight: FontWeight.w600)),
 
+                    addHeight(30),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        // color: AppTheme.buttonColor
+                      ),
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Get.back();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            minimumSize:
+                            Size(AddSize.screenWidth, AddSize.size50 * 1.1),
+                            backgroundColor: AppTheme.buttonColor,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8), // <-- Radius
+                            ),
+                            // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("OK",
+                                  style:  GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                      letterSpacing: .5,
+                                      fontSize: 15)),
+                            ],
+                          )),
+                    ),
+                    addHeight(5),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+        // Handle payload data here
+      }
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print("App opened by notification: ${message.notification?.title}");
+      print("App opened by notification: ${message.notification?.body}");
+      // print("App opened by notification: ${message.data[].}");
+      if (message.data.isNotEmpty) {
+        final forNavigate = message.data['screen_name'];
+        // print("Payload data: ${message.data['screen_name']}");
+        // NotificationService.showNotification(message);
+        if(forNavigate == "alerts"){
+          Get.to(()=>const BesterProfilePage());
+        }else{
+          Get.to(()=>const BesterLoginPage());
+        }
+      }else{
+        print("BODY IS EMPTY");
+      }
+    });
+    FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null) {
+        print("App opened from terminated state by notification: ${message.notification?.body}");
+        if (message.data.isNotEmpty) {
+          print("Payload data: ${message.data}");
+          // Handle payload data here
+        }
+      }
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    manageNotification();
     alertHandlerController.getUserType();
     locationController.getLocation();
   }

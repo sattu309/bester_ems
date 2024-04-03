@@ -1,9 +1,9 @@
 import 'package:ecom_demo/resources/app_theme.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../conttroller/alert_handle_controller.dart';
 import '../resources/add_text.dart';
 import '../common_repository/api_repository.dart';
 import 'bester_aboutUs_page.dart';
@@ -17,6 +17,7 @@ class BesterProfilePage extends StatefulWidget {
 }
 
 class _BesterProfilePageState extends State<BesterProfilePage> {
+  final userDataController = Get.put(AlertHandleController());
   Repositories repositories = Repositories();
   @override
   Widget build(BuildContext context) {
@@ -36,10 +37,11 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
                 addHeight(height* .1),
                 Image.asset("assets/images/bester.png", height: 100,),
                 addHeight(10),
-                Text("Vicky",
+                Text(
+                    userDataController.userName.value.toString(),
                     //textAlign: TextAlign.center,
                     style: GoogleFonts.poppins(fontSize: 16, color:  Color(0xffDB3022), fontWeight: FontWeight.w600)),
-                addHeight(5),
+                addHeight(7),
              userInfo(),
                 addHeight(5),
              Row(
@@ -47,7 +49,8 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
                children: [
                  Icon(Icons.mail),
                  addWidth(6),
-                 Text("demo@gmail.com",
+                 Text(
+                     userDataController.email.value.toString(),
                      //textAlign: TextAlign.center,
                      style: GoogleFonts.poppins(fontSize: 14, color:  Color(0xff191723), fontWeight: FontWeight.w500)),
                ],
@@ -58,7 +61,8 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
                children: [
                  const Icon(Icons.dashboard),
                  addWidth(6),
-                 Text("ssspl",
+                 Text(
+                     userDataController.companyName.value.toString(),
                      //textAlign: TextAlign.center,
                      style: GoogleFonts.poppins(fontSize: 14, color:  Color(0xff191723), fontWeight: FontWeight.w500)),
                ],
@@ -71,7 +75,7 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
 
               ],
             )),
-            addHeight(20),
+            addHeight(30),
             GestureDetector(
               onTap: (){
                 Get.to(()=>const BesterContactUsPage());
@@ -81,27 +85,27 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
                 children: [
                   const Icon(Icons.help_outline_outlined,
                     color: Color(0xffDB3022),),
-                  addWidth(6),
+                  addWidth(20),
                   Text("HELP & SUPPORT",
                       //textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(fontSize: 14, color:
-                      Color(0xff6F7183), fontWeight: FontWeight.w500)),
+                      style: GoogleFonts.poppins(fontSize: 15, color:
+                      const Color(0xff6F7183), fontWeight: FontWeight.w500)),
                 ],
               ),
             ),
-            addHeight(20),
+            addHeight(30),
             Row(
               //mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset("assets/images/briefcase.png",height: 23,width: 23, color: AppTheme.buttonColor,),
-                addWidth(6),
+                addWidth(20),
                 Text("SERVICE",
                     //textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(fontSize: 14, color:
-                    Color(0xff6F7183), fontWeight: FontWeight.w500)),
+                    style: GoogleFonts.poppins(fontSize: 15, color:
+                    const Color(0xff6F7183), fontWeight: FontWeight.w500)),
               ],
             ),
-            addHeight(20),
+            addHeight(30),
             GestureDetector(
               onTap: (){
                 Get.to(()=>const AboutUsPage());
@@ -110,15 +114,15 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
                 //mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(Icons.account_circle_outlined,color: Color(0xffDB3022),),
-                  addWidth(6),
+                  addWidth(20),
                   Text("ABOUT",
                       //textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(fontSize: 14,
+                      style: GoogleFonts.poppins(fontSize: 15,
                           color:  Color(0xff6F7183), fontWeight: FontWeight.w500)),
                 ],
               ),
             ),
-            addHeight(20),
+            addHeight(30),
             GestureDetector(
               onTap: (){
                 repositories.logOutUser();
@@ -127,11 +131,11 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
                 //mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset("assets/images/logout.png",height: 23,width: 23, color: AppTheme.buttonColor,),
-                  addWidth(6),
+                  addWidth(20),
                   Text("LOGOUT",
                       //textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(fontSize: 14,
-                          color:  Color(0xff6F7183), fontWeight: FontWeight.w500)),
+                      style: GoogleFonts.poppins(fontSize: 15,
+                          color:  const Color(0xff6F7183), fontWeight: FontWeight.w500)),
                 ],
               ),
             ),

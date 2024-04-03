@@ -50,6 +50,7 @@ class CommonTextFieldWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       // floatingLabelBehavior: FloatingLabelBehavior.never,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       onTap: onTap,
       readOnly: readOnly!,
       controller: controller,

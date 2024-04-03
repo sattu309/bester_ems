@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 
+import 'conttroller/alert_handle_controller.dart';
+
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,9 +20,10 @@ void main() async {
     carPlay: true,
   );
   getFcmToken();
+  messageHandler();
    NotificationService().initializeNotification();
    NotificationService.initializeFirebaseMessaging();
-  await NotificationService.createNotificationChannel();
+  await NotificationService().createNotificationChannel();
   runApp(const MyApp());
 }
 
@@ -47,27 +50,31 @@ class MyApp extends StatelessWidget {
   }
 }
 getFcmToken() async {
+  final userTypeController = Get.put(AlertHandleController());
+  userTypeController.getUserType();
   var fcmToekn = await FirebaseMessaging.instance.getToken();
-  print("FCM TOEKN IS ${fcmToekn}");
-  AndroidNotificationDetails androidNotificationDetails = const AndroidNotificationDetails(
+  print("FCM TOEKN IS $fcmToekn");
+  String soundFileName = userTypeController.userType.value == "0" ?'ring.wav':'admin.mp3';
+  AndroidNotificationDetails androidNotificationDetails =  AndroidNotificationDetails(
     "demo_22",
     "demo_app",
     priority: Priority.high,
     playSound: true,
-    sound: RawResourceAndroidNotificationSound('ring'), // Default sound
+    sound: RawResourceAndroidNotificationSound(soundFileName), // Default sound
     importance: Importance.max,
   );
   NotificationDetails(android: androidNotificationDetails);
 
 }
-// await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-//   alert: true, // Required to display a heads up notification
-//   badge: true,
-//   sound: true,
-//
-// );
-// FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-//   // Handle foreground messages here
-//   print("Foreground message received: ${message.notification!.body}");
-//   // Update UI or perform actions based on the received message
-// });
+Future<void> messageHandler() async {
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+    NotificationService.showNotification(event);
+  });
+
+}

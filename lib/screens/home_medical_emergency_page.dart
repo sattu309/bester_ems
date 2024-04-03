@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../common_repository/api_repository.dart';
+import '../conttroller/alert_handle_controller.dart';
 import '../models/get_active_alert_model.dart';
 import '../models/send_alert_mode.dart';
 import '../resources/add_text.dart';
@@ -25,7 +26,8 @@ class MedicalEmergencyPage extends StatefulWidget {
   final String emsTypeMotor;
   final String emsTypeInjury;
   final String emsTypeSec;
-  const MedicalEmergencyPage({Key? key, required this.emsTypeMedical, required this.emsTypeInjury, required this.emsTypeMotor, required this.emsTypeSec}) : super(key: key);
+  final Function? callback;
+  const MedicalEmergencyPage({Key? key, required this.emsTypeMedical, required this.emsTypeInjury, required this.emsTypeMotor, required this.emsTypeSec, required this.callback,}) : super(key: key);
 
   @override
   State<MedicalEmergencyPage> createState() => _MedicalEmergencyPageState();
@@ -34,36 +36,7 @@ class MedicalEmergencyPage extends StatefulWidget {
 class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
 
   final locationController = Get.put(LocationController());
-
- RxString userName ="".obs;
- RxString alertId ="".obs;
- RxString userMobile ="".obs;
- RxString userAppName ="".obs;
- RxString userToken ="".obs;
- RxString userSecAdmin ="".obs;
-
-  userCheck() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    OtpVerifyModel? user =
-    OtpVerifyModel.fromJson(jsonDecode(pref.getString('user_info')!));
-    userName.value = user.success!.name!;
-    userToken.value = user.success!.token!;
-    userMobile.value = user.success!.mobile!;
-    userAppName.value = user.success!.aPPNAME!;
-    userSecAdmin.value = user.success!.showsec!;
-    print("NAME OF USER IS $userName");
-  }
-
-  alertDetailsData() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    print(pref.getString('alert_data'));
-    SendAlertModel? alertData =
-    SendAlertModel.fromJson(jsonDecode(jsonEncode(jsonDecode(pref.getString("alert_data")!))));
-
-    print("ALERT ID IS 1");
-    alertId.value = alertData.alertID!.toString();
-    print("ALERT ID GOT IT $alertId");
-  }
+  final userDataController = Get.put(AlertHandleController());
 
   Repositories repositories = Repositories();
   GetActiveAlertModel? getActiveAlertModel;
@@ -95,10 +68,8 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
   @override
   void initState() {
     super.initState();
-    userCheck();
-    alertDetailsData();
+    locationController.getLocation();
     getActiveAlertRepo();
-    // getEmergencyAlertData();
   }
 
 
@@ -107,6 +78,7 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
@@ -204,17 +176,19 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            getActiveAlertModel!.success!.status == 1 ?
+
+                            getActiveAlertModel!.success != null && getActiveAlertModel!.success!.status == 1 ?
                             Expanded(
-                              child: Text("Hold tight, Alert sent to ${getActiveAlertModel!.success!.emstype == "sec" ? userSecAdmin : userAppName}Keep your phone close at all times, we will call you on $userMobile",
+                              child: Text(
+                                  "Hold tight, Alert sent to ${getActiveAlertModel!.success!.emstype == "sec" ? userDataController.showSec.value : userDataController.userAppName.value}Keep your phone close at all times, we will call you on ${userDataController.mobile.value}",
                                   style: GoogleFonts.poppins(
                                       fontSize: 17,
                                       color: Colors.black,
                                       fontWeight: FontWeight.w500)),
                             ):
-                            getActiveAlertModel!.success!.status == 4  ?
+                            getActiveAlertModel!.success != null && getActiveAlertModel!.success!.status == 4  ?
                             Expanded(
-                              child: Text("Hold tight, Alert sent to ${getActiveAlertModel!.success!.emstype == "sec" ? userSecAdmin : userAppName}Keep your phone close at all times, we will call you on $userMobile",
+                              child: Text("Hold tight, Alert sent to ${getActiveAlertModel!.success!.emstype == "sec" ? userDataController.showSec.value : userDataController.userAppName.value}Keep your phone close at all times, we will call you on ${userDataController.mobile.value}",
                                   style: GoogleFonts.poppins(
                                       fontSize: 17,
                                       color: Colors.black,
@@ -226,7 +200,7 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
                                   style: GoogleFonts.poppins(color: Colors.black, fontSize: 16),
                                   children: <TextSpan>[
                                     TextSpan(
-                                        text: userAppName.value,
+                                        text: userDataController.userAppName.value,
                                         style: GoogleFonts.poppins(
                                             fontWeight: FontWeight.w600,
                                             color: Colors.black,
@@ -266,7 +240,7 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                    "${getActiveAlertModel!.success!.emstype == "sec" ? userSecAdmin : userAppName}",
+                                    getActiveAlertModel!.success != null && getActiveAlertModel!.success!.emstype == "sec" ? userDataController.showSec.value : userDataController.userAppName.value,
                                     style: GoogleFonts.poppins(
                                         fontSize: 19,
                                         color: Colors.black,
@@ -284,7 +258,7 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
                           height: 1,
                         ),
                         addHeight(15),
-                        getActiveAlertModel!.success!.status == 1 || getActiveAlertModel!.success!.status == 4 ?
+                        getActiveAlertModel!.success != null && getActiveAlertModel!.success!.status == 1 || getActiveAlertModel!.success != null && getActiveAlertModel!.success!.status == 4 ?
                         Column(
                           children: [
                             Container(
@@ -302,11 +276,12 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
                                         widget.emsTypeInjury == "injury" ?"injury":"Security Emergency",
                                         userAddress: locationController.concatenatedString.value.toString(),
                                         context: context, alertStatus: '2',
-                                      alertId: alertId.value.toString()
+                                      alertID: getActiveAlertModel!.success!.id.toString()
 
                                     ).then((value){
                                       if(value.success != null){
                                       getActiveAlertRepo();
+                                      widget.callback!();
                                       }else{
                                         log("something went wrong");
                                         //Helpers.showToast(value.alertID.toString());
@@ -351,13 +326,14 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
                                         widget.emsTypeInjury == "injury" ?"injury":"Security Emergency",
                                         userAddress: locationController.concatenatedString.value.toString(),
                                         alertStatus: '3',
-                                      alertId: alertId.value.toString(),
+                                      alertID: getActiveAlertModel!.success!.id.toString(),
                                         context: context,
 
 
                                     ).then((value){
                                       if(value.success != null){
                                         getActiveAlertRepo();
+                                        widget.callback!();
                                       }else{
                                         log("something went wrong");
                                         //Helpers.showToast(value.alertID.toString());
@@ -403,21 +379,15 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
                                     widget.emsTypeMotor == "motor" ? "motor":
                                     widget.emsTypeInjury == "injury" ?"injury":"Security Emergency",
                                     userAddress: locationController.concatenatedString.value.toString(),
-                                    context: context, alertStatus: '1', alertId: alertId.value.toString()
+                                    context: context, alertStatus: '1',
+                                    alertID: ""
                                 ).then((value) async {
                                   if(value.success != null) {
-
-                                    SharedPreferences pref = await SharedPreferences.getInstance();
-                                    pref.setString("alert_data", jsonEncode(value));
-                                    print(pref.getString("alert_data"));
+                                    widget.callback!();
                                     Helpers.showToast(value.success.toString());
-                                    buildShowDialog(context);
-                                    sendPushNotification(
-                                      deviceToken: 'fYzzEyQsT5Knzuoe2N9_ES:APA91bGGdKj-CuCo6aE2oSwdslBYmIgYs9uptpZ35jciTp5WNqL-vhQUYPfIka4kW3-H6dQ1bgIPypf9nyLj7wb4KFKUMjVokcC_PIWbhmjBvlEbm0V2ZXl_Rpap01XztjaL_rUNpnky',
-                                      title: 'DEMO MSG',
-                                      body: 'Hey how are you',
+                                    // buildShowDialog(context);
+                                    getActiveAlertRepo();
 
-                                    );
                                   }
                                   else{
                                     Helpers.showToast("soomething Went wrong");
@@ -559,7 +529,7 @@ class _MedicalEmergencyPageState extends State<MedicalEmergencyPage> {
                                             fontSize: 14, color: Color(0xff303D48),
                                             fontWeight: FontWeight.w600)),
                                     addHeight(10),
-                                    Text("Hi $userName, we've received your Medical Emergency. We are here for you!",
+                                    Text("Hi ${userDataController.userName.value}, we've received your Medical Emergency. We are here for you!",
                                         textAlign: TextAlign.center,
                                         style: GoogleFonts.poppins(
                                             fontSize: 12,

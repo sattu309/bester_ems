@@ -9,5 +9,6 @@ class ApiUrls{
   static const sendEtaApiUrl = "${baseUrl}sendadmalert";
   static const getActiveAlertUrl = "${baseUrl}getactivealerts";
   static const updateTokenUrl = "${baseUrl}updatetoken";
+  static const supportUrl = "${baseUrl}support";
 
 }
