@@ -39,9 +39,11 @@ class _BesterContactUsPageState extends State<BesterContactUsPage> {
 
   Future<void> shareOnWhatsApp(String phone) async {
     String formattedPhone = phone.replaceAll(RegExp(r'[^\d+]'), '');
+    if (!formattedPhone.startsWith('+')) {
+      formattedPhone = '+91$formattedPhone';
+    }
 
     var whatsappUrl = "whatsapp://send?phone=$formattedPhone";
-
     if (await canLaunch(whatsappUrl)) {
       await launch(whatsappUrl);
     } else {
@@ -53,6 +55,7 @@ class _BesterContactUsPageState extends State<BesterContactUsPage> {
       }
     }
   }
+
 
   void sendEmail() async {
     final Uri params = Uri(
@@ -129,9 +132,14 @@ class _BesterContactUsPageState extends State<BesterContactUsPage> {
               height: 1,
               thickness: 1.5,
             ),
-            userInfo(
-                iconData: Icons.wordpress,
-                title: supportModel!.success!.web.toString()),
+            GestureDetector(
+              onTap: (){
+                makingPhoneCall(supportModel!.success!.web.toString());
+              },
+              child: userInfo(
+                  iconData: Icons.wordpress,
+                  title: supportModel!.success!.web.toString()),
+            ),
             addHeight(5),
             const Divider(
               height: 1,

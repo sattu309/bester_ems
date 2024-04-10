@@ -19,6 +19,11 @@ class BesterProfilePage extends StatefulWidget {
 class _BesterProfilePageState extends State<BesterProfilePage> {
   final userDataController = Get.put(AlertHandleController());
   Repositories repositories = Repositories();
+  @override
+  void initState() {
+    super.initState();
+    userDataController.getUserType();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,13 +52,17 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
                 addHeight(5),
              Row(
                mainAxisAlignment: MainAxisAlignment.center,
+               crossAxisAlignment: CrossAxisAlignment.start,
                children: [
-                 Icon(Icons.mail),
+                 const Icon(Icons.mail),
                  addWidth(6),
-                 Text(
-                     userDataController.email.value.toString(),
-                     //textAlign: TextAlign.center,
-                     style: GoogleFonts.poppins(fontSize: 14, color:  Color(0xff191723), fontWeight: FontWeight.w500)),
+                 Flexible(
+                   child: Text(
+                       userDataController.email.value.toString(),
+
+                       //textAlign: TextAlign.center,
+                       style: GoogleFonts.poppins(fontSize: 14, color:  const Color(0xff191723), fontWeight: FontWeight.w500)),
+                 ),
                ],
              ),
                 addHeight(5),
@@ -63,7 +72,7 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
                  const Icon(Icons.dashboard),
                  addWidth(6),
                  Text(
-                   userDataController.companyName.value != null ?
+                   userDataController.companyName.value == "" ?
                      userDataController.companyName.value.toString() : "Ssspl",
                      //textAlign: TextAlign.center,
                      style: GoogleFonts.poppins(fontSize: 14, color:  Color(0xff191723), fontWeight: FontWeight.w500)),

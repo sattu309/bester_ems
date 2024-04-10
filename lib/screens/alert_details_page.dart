@@ -3,9 +3,9 @@ import 'package:ecom_demo/resources/api_urls.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../conttroller/alert_data_controller.dart';
+import '../conttroller/alert_handle_controller.dart';
 import '../models/alert_details_model.dart';
 import '../repository/send_alert_repo.dart';
 import '../resources/add_text.dart';
@@ -25,6 +25,7 @@ class AlertDetailsPage extends StatefulWidget {
 }
 
 class _AlertDetailsPageState extends State<AlertDetailsPage> {
+
   final emergencyDataController = Get.put(AlertDataController());
   Repositories repositories = Repositories();
   AlertDetailsModel? alertDetailsModel;
@@ -62,6 +63,7 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
       throw 'Could not launch $url';
     }
   }
+
   @override
   void initState() {
     super.initState();
@@ -341,6 +343,7 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                     ),
                     child: ElevatedButton(
                         onPressed: () {
+                          final userDataController = Get.put(AlertHandleController());
                           sendEtaTimeRepo(
                               emsType: widget.emsType.toString(),
                               etaTime: "",
@@ -348,6 +351,7 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                               alertId: widget.alertId.toString(),
                               context: context).then((value){
                             if(value.success != null){
+                              userDataController.clearDataLocally();
                               emergencyDataController.getEmergencyData();
                               Get.back();
                             }else{
@@ -417,19 +421,21 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                                   addHeight(10),
                                   Obx((){
                                     return
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Container(
-                                            //width: 200,
-                                            padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 7),
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(5),
-                                                color: Colors.white,
-                                                border: Border.all(color: const Color(0xFFEEEEEE))),
-                                            child:
-                                            DropdownButtonHideUnderline(
-                                              child: DropdownButton(
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
+                                           mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              width: 230,
+                                              padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 7),
+                                              decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(5),
+                                                  color: Colors.white,
+                                                  border: Border.all(color: const Color(0xFFEEEEEE))),
+                                              child:
+                                              DropdownButton(
+
                                                 borderRadius: BorderRadius.circular(10),
                                                 focusColor: Colors.black87,
                                                 elevation: 1,
@@ -449,23 +455,27 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                                                   fontWeight: FontWeight.w400,
                                                 ),
                                                 value: dropdownvalue.value,
-                                                icon:null,
-                                                // icon: const Icon(
-                                                //   Icons.keyboard_arrow_down,
-                                                //   color: Color(0xFF000000),
-                                                // ),
+                                                // icon:null,
+                                                icon: const Icon(
+                                                  Icons.keyboard_arrow_down,
+                                                  color: Color(0xFFffffff),
+                                                ),
+                                                underline: Container(
+                                                  height: 0,
+                                                  color: Colors.transparent,
+                                                ),
                                                 items: items.map((value) {
                                                   return DropdownMenuItem(
+
                                                     value: value.toString(),
                                                     child: Text(
-
                                                       value.toString(),
                                                       style: GoogleFonts.poppins(
                                                           fontSize: AddSize.font14,
                                                           fontWeight: FontWeight.w500,
                                                           color: Colors.black
                                                       ),
-                                                  ));
+                                                                                                    ));
                                                 }).toList(),
                                                 onChanged: (newValue) {
                                                   setState(() {
@@ -474,15 +484,15 @@ class _AlertDetailsPageState extends State<AlertDetailsPage> {
                                                 },
                                               ),
                                             ),
-                                          ),
-                                          const Expanded(
-                                            child: Text("Minutes",
-                                                //textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                    fontSize: 15, color: Colors.black,
-                                                    fontWeight: FontWeight.w600)),
-                                          )
-                                        ],
+                                            Expanded(
+                                              child: const Text("Minutes",
+                                                  //textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      fontSize: 13, color: Colors.black,
+                                                      fontWeight: FontWeight.w600)),
+                                            )
+                                          ],
+                                        ),
                                       );
                                   }),
 

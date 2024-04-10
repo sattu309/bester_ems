@@ -3,9 +3,7 @@ import 'package:ecom_demo/screens/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-
 import 'conttroller/alert_handle_controller.dart';
 
 void main() async {
@@ -20,9 +18,10 @@ void main() async {
     carPlay: true,
   );
   getFcmToken();
+  NotificationService();
   messageHandler();
-   NotificationService().initializeNotification();
-   NotificationService.initializeFirebaseMessaging();
+  NotificationService().initializeNotification();
+  NotificationService.initializeFirebaseMessaging();
   await NotificationService().createNotificationChannel();
   runApp(const MyApp());
 }
@@ -54,16 +53,16 @@ getFcmToken() async {
   userTypeController.getUserType();
   var fcmToekn = await FirebaseMessaging.instance.getToken();
   print("FCM TOEKN IS $fcmToekn");
-  AndroidNotificationDetails androidNotificationDetails =
-  const AndroidNotificationDetails(
-    "demo_22",
-    "demo_app",
-    priority: Priority.high,
-    playSound: true,
-    sound: RawResourceAndroidNotificationSound('ring'), // Default sound
-    importance: Importance.max,
-  );
-  NotificationDetails(android: androidNotificationDetails);
+  // AndroidNotificationDetails androidNotificationDetails =
+  // AndroidNotificationDetails(
+  //   "demo_22",
+  //   "demo_app",
+  //   priority: Priority.high,
+  //   playSound: true,
+  //   sound: forSound != "" ? const RawResourceAndroidNotificationSound("ring"):null, // Default sound
+  //   importance: Importance.max,
+  // );
+  // NotificationDetails(android: androidNotificationDetails);
 
 }
 Future<void> messageHandler() async {
@@ -74,7 +73,7 @@ Future<void> messageHandler() async {
   );
 
   FirebaseMessaging.onMessage.listen((RemoteMessage event) {
-    NotificationService.showNotification(event);
+    NotificationService().showNotification(event);
   });
 
 }

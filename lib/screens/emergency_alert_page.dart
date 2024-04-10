@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:ecom_demo/resources/add_text.dart';
@@ -32,7 +33,7 @@ class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
     super.initState();
     alertHandleController.getUserType();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      emergencyDataController.getEmergencyData();
+        emergencyDataController.getEmergencyData();
     });
   }
 
@@ -96,9 +97,10 @@ class _EmergencyAlertPageState extends State<EmergencyAlertPage> {
                               ? Get.to(() => MedicalEmergencyPage(
                             emsTypeMedical:
                             emergencyData.emstype.toString(),
-                            emsTypeInjury: '',
-                            emsTypeMotor: '',
-                            emsTypeSec: '',
+                            emsTypeInjury: emergencyData.emstype.toString(),
+                            emsTypeMotor: emergencyData.emstype.toString(),
+                            emsTypeSec: emergencyData.emstype.toString(),
+                            eTypeHome: emergencyData.emstype.toString(),
                           ))
                               :
                           (emergencyData.status == 2 || emergencyData.status == 5) ? null :

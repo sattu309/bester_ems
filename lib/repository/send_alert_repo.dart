@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/bester_login_model.dart';
 import '../models/emergency_alert_model.dart';
+import '../models/get_active_alert_model.dart';
 import '../models/otpverify_model.dart';
 import '../models/send_alert_mode.dart';
 import '../models/send_eta_model.dart';
@@ -116,4 +117,6 @@ Future<EmergencyAlertsModel> getEmergencyAlertRepo() async {
     throw Exception(response.body);
   }
 }
+
+
 

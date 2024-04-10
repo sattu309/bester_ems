@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../conttroller/alert_data_controller.dart';
 import '../conttroller/alert_handle_controller.dart';
 import 'home_medical_emergency_page.dart';
 
@@ -15,6 +16,7 @@ class BesterHomePage extends StatefulWidget {
 
 class _BesterHomePageState extends State<BesterHomePage> {
   final userDataController= Get.put(AlertHandleController());
+  final emergencyDataController = Get.put(AlertDataController());
 
   getFcmToken() async {
     var fcmToken = await FirebaseMessaging.instance.getToken();
@@ -62,11 +64,13 @@ class _BesterHomePageState extends State<BesterHomePage> {
                     addHeight(10),
                     GestureDetector(
                       onTap: (){
-                        Get.to(()=>const MedicalEmergencyPage(
+                        Get.to(()=>  const MedicalEmergencyPage(
                           emsTypeMedical: 'medical',
                           emsTypeInjury: '',
                           emsTypeMotor: '',
-                          emsTypeSec: '',));
+                          emsTypeSec: '',
+                          eTypeHome: "medical",
+                          ));
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 3,horizontal: 3),
@@ -99,11 +103,14 @@ class _BesterHomePageState extends State<BesterHomePage> {
                     addHeight(10),
                     GestureDetector(
                       onTap: (){
-                        Get.to(()=>const MedicalEmergencyPage(
+                        Get.to(()=>  const MedicalEmergencyPage(
                           emsTypeMedical: '',
                           emsTypeInjury: '',
                           emsTypeMotor: 'motor',
-                          emsTypeSec: '',));
+                          emsTypeSec: '',
+                          eTypeHome: "motor",
+
+                          ));
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 3,horizontal: 3),
@@ -123,7 +130,7 @@ class _BesterHomePageState extends State<BesterHomePage> {
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.only(left:10),
-                                  child: Text("Motor Accident/Town-in\n Service",
+                                  child: Text("Motor Accident/Tow-in\n Service",
                                       style: GoogleFonts.poppins(fontSize: 16, color: Colors.white, fontWeight: FontWeight.w400)),
                                 ),
                               ),
@@ -136,11 +143,13 @@ class _BesterHomePageState extends State<BesterHomePage> {
                     addHeight(10),
                     GestureDetector(
                       onTap: (){
-                        Get.to(()=>const MedicalEmergencyPage(
+                        Get.to(()=> const MedicalEmergencyPage(
                           emsTypeMedical: '',
                           emsTypeInjury: 'injury',
                           emsTypeMotor: '',
-                          emsTypeSec: '',));
+                          emsTypeSec: '',
+                          eTypeHome: "injury",
+                          ));
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 3,horizontal: 3),
@@ -175,11 +184,13 @@ class _BesterHomePageState extends State<BesterHomePage> {
                     userDataController.showSec.value != "0" ?
                     GestureDetector(
                       onTap: (){
-                        Get.to(()=>const MedicalEmergencyPage(
+                        Get.to(()=> const MedicalEmergencyPage(
                           emsTypeMedical: '',
                           emsTypeInjury: '',
                           emsTypeMotor: '',
-                          emsTypeSec: 'sec',));
+                          emsTypeSec: 'sec',
+                          eTypeHome: "sec",
+                          ));
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 3,horizontal: 3),

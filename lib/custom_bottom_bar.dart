@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:ecom_demo/push_notification/notifcation_service.dart';
@@ -12,13 +11,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'conttroller/alert_data_controller.dart';
 import 'conttroller/alert_handle_controller.dart';
 import 'conttroller/get_current_location.dart';
 import 'conttroller/main_homecontroller.dart';
 import 'login_flow/bester_login_page.dart';
-import 'models/otpverify_model.dart';
 
 var forSound = "";
 class MyNavigationBar extends StatefulWidget {
@@ -37,15 +34,17 @@ class _MyNavigationBarState extends State<MyNavigationBar > {
     print("function call");
     NotificationService().createNotificationChannel();
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      NotificationService().showNotification(message);
       // Handle foreground messages
       print("Foreground message received: ${message.notification?.body}");
       if (message.data.isNotEmpty) {
-        forSound = message.data['sound'];
-        log(forSound);
-        print("Payload data: ${message.data}");
-        print("Payload data: ${message.notification!.title.toString()}");
-        print("Payload data: ${message.notification!.body.toString()}");
-        showDialog(context: context, builder: (BuildContext){
+        emergencyDataController.getEmergencyData();
+       forSound = message.data['sound'] ?? "";
+        log("NO SOUND $forSound");
+        log("Payload data: ${message.data}");
+        log("Payload data: ${message.notification!.title.toString()}");
+        log("Payload data: ${message.notification!.body.toString()}");
+        showDialog(context: context, builder: (BuildContext context){
           return Dialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             child: Padding(
@@ -67,13 +66,13 @@ class _MyNavigationBarState extends State<MyNavigationBar > {
                     Text(message.notification!.title.toString().capitalizeFirst.toString(),
                         //textAlign: TextAlign.center,
                         style: const TextStyle(
-                            fontSize: 13, color: Colors.black,
+                            fontSize: 15, color: Colors.black,
                             fontWeight: FontWeight.w600)),
                     addHeight(5),
                     Text(message.notification!.body.toString().capitalizeFirst.toString(),
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                            fontSize: 13, color: Colors.black,
+                            fontSize: 14, color: Colors.black,
                             fontWeight: FontWeight.w600)),
 
                     addHeight(30),
@@ -132,21 +131,25 @@ class _MyNavigationBarState extends State<MyNavigationBar > {
         // print("Payload data: ${message.data['screen_name']}");
         // NotificationService.showNotification(message);
         if(forNavigate == "alerts"){
-          Get.to(()=>const BesterProfilePage());
+          Get.to(()=>const EmergencyAlertPage());
         }else{
-          Get.to(()=>const BesterLoginPage());
+          Get.to(()=>const BesterHomePage());
         }
       }else{
         print("BODY IS EMPTY");
       }
     });
     FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
-      if (message != null) {
-        print("App opened from terminated state by notification: ${message.notification?.body}");
-        if (message.data.isNotEmpty) {
-          print("Payload data: ${message.data}");
-          // Handle payload data here
+      if (message!.data.isNotEmpty) {
+        forSound = message.data['sound'];
+        final forNavigate = message.data['screen_name'];
+        if(forNavigate == "alerts"){
+          Get.to(()=>const EmergencyAlertPage());
+        }else{
+          Get.to(()=>const BesterHomePage());
         }
+      }else{
+        print("BODY IS EMPTY");
       }
     });
   }

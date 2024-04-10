@@ -1,15 +1,15 @@
+import 'dart:developer';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import '../conttroller/alert_handle_controller.dart';
-import '../custom_bottom_bar.dart';
 
 class NotificationService {
   final alertHandlerController = Get.put(AlertHandleController());
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   FlutterLocalNotificationsPlugin();
   AndroidInitializationSettings androidInitializationSettings =
-  const AndroidInitializationSettings("@mipmap/ic_launcher");
+  const AndroidInitializationSettings("@mipmap/ic_launcher", );
   static FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   DarwinInitializationSettings darwinInitializationSettings = const DarwinInitializationSettings(
       requestAlertPermission: true,
@@ -24,6 +24,7 @@ class NotificationService {
       alert: true,
       badge: true,
       sound: true,
+
     );
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('User granted permission for notifications');
@@ -37,7 +38,6 @@ class NotificationService {
   @pragma('vm:entry-point')
   static Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     print("Handling a background message: ${message.messageId}");
-    // You can handle the incoming message payload here
   }
 
   initializeNotification() async {
@@ -56,14 +56,15 @@ class NotificationService {
     });
   }
    Future<void> createNotificationChannel() async {
-    String soundFileName = 'ring.wav';
-     AndroidNotificationChannel channel =   AndroidNotificationChannel(
+    AndroidNotificationChannel channel =   const AndroidNotificationChannel(
       'channel_id_1', // Replace with your channel ID
       'Custom_channel', // Replace with your channel name
       description: 'Custom Channel Description', // Replace with your channel description
       importance: Importance.max,
       playSound: true,
-      sound: forSound.isNotEmpty ? const RawResourceAndroidNotificationSound("ring"):null,
+      sound: RawResourceAndroidNotificationSound('ring'),
+      // alertHandlerController.userType.value == "1" ?
+      //         const RawResourceAndroidNotificationSound("ring"):null,
     );
 
     await flutterLocalNotificationsPlugin
@@ -72,35 +73,79 @@ class NotificationService {
         ?.createNotificationChannel(channel);
   }
 
+  // showNotificationWithPayLoad({
+  //   required title,
+  //   required body,
+  //   required payload,
+  // }) async {
+  //   AndroidNotificationDetails androidNotificationDetails =    AndroidNotificationDetails(
+  //   "demo_100",
+  //   "demo_app",
+  //   channelDescription: "This is custom sound msg",
+  //   priority: Priority.high,
+  //   playSound: true,
+  //   sound: forSound != "" ? const RawResourceAndroidNotificationSound("ring"):null,// Default sound
+  //   // sound:  RawResourceAndroidNotificationSound(soundFileName), // Default sound
+  //   importance: Importance.max,
+  //
+  // );
+  //
+  //   NotificationDetails notificationDetails =
+  //   NotificationDetails(android: androidNotificationDetails,);
+  //   flutterLocalNotificationsPlugin
+  //       .show(
+  //       int.parse(DateTime.now()
+  //           .millisecondsSinceEpoch
+  //           .toString()
+  //           .substring(DateTime.now().millisecondsSinceEpoch.toString().length - 5)),
+  //       title,
+  //       body,
+  //       notificationDetails,
+  //       payload: payload)
+  //       .catchError((e) {
+  //     throw Exception(e);
+  //   });
+  //
+  //   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+  //     alert: true,
+  //     badge: true,
+  //     sound: true,
+  //   );
+  //
+  // }
+
   showNotificationWithPayLoad({
     required title,
     required body,
     required payload,
   }) async {
-    AndroidNotificationDetails androidNotificationDetails =    AndroidNotificationDetails(
-    "demo_100",
-    "demo_app",
-    channelDescription: "This is custom sound msg",
-    priority: Priority.high,
-    playSound: true,
-    sound: forSound.isNotEmpty ? const RawResourceAndroidNotificationSound("ring"):null, // Default sound
-    // sound:  RawResourceAndroidNotificationSound(soundFileName), // Default sound
-    importance: Importance.max,
-
-  );
+    AndroidNotificationDetails androidNotificationDetails =
+     const AndroidNotificationDetails(
+      "demo_100",
+      "demo_app",
+      channelDescription: "This is custom sound msg",
+      priority: Priority.high,
+      playSound: true,
+      sound: RawResourceAndroidNotificationSound('ring'),
+      // alertHandlerController.userType.value == "1" ?
+      // const RawResourceAndroidNotificationSound("ring"):null,
+      // // const RawResourceAndroidNotificationSound("admin"), // Use default sound if forSound is empty
+      importance: Importance.max,
+    );
 
     NotificationDetails notificationDetails =
     NotificationDetails(android: androidNotificationDetails,);
     flutterLocalNotificationsPlugin
         .show(
-        int.parse(DateTime.now()
-            .millisecondsSinceEpoch
-            .toString()
-            .substring(DateTime.now().millisecondsSinceEpoch.toString().length - 5)),
-        title,
-        body,
-        notificationDetails,
-        payload: payload)
+      int.parse(DateTime.now()
+          .millisecondsSinceEpoch
+          .toString()
+          .substring(DateTime.now().millisecondsSinceEpoch.toString().length - 5)),
+      title,
+      body,
+      notificationDetails,
+      payload: payload,
+    )
         .catchError((e) {
       throw Exception(e);
     });
@@ -110,25 +155,29 @@ class NotificationService {
       badge: true,
       sound: true,
     );
-
   }
 
 
-  static Future<void> showNotification(
+
+   Future<void> showNotification(
      RemoteMessage message
       ) async {
-
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
+    alertHandlerController.getUserType();
+    log("SOUND ${alertHandlerController.userType.value}");
+     AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
       'custom_channel_id', // Same channel ID as created above
       'Custom Channel', // Same channel name as created above
       channelDescription: 'Custom Channel Description', // Same channel description as created above
       importance: Importance.max,
       playSound: true,
       priority: Priority.high,
-      sound: RawResourceAndroidNotificationSound('ring'),
+      sound:
+      // RawResourceAndroidNotificationSound('ring'),
+      alertHandlerController.userType.value == "0" ? const
+      RawResourceAndroidNotificationSound("ring"):null,
     );
-    const NotificationDetails platformChannelSpecifics =
+     NotificationDetails platformChannelSpecifics =
     NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
@@ -139,6 +188,4 @@ class NotificationService {
       payload: message.data.toString(),
     );
   }
-
-
 }
