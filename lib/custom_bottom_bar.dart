@@ -17,7 +17,7 @@ import 'conttroller/get_current_location.dart';
 import 'conttroller/main_homecontroller.dart';
 import 'login_flow/bester_login_page.dart';
 
-var forSound = "";
+String forSound = "";
 class MyNavigationBar extends StatefulWidget {
   MyNavigationBar ({key}) : super(key: key);
 
@@ -34,13 +34,13 @@ class _MyNavigationBarState extends State<MyNavigationBar > {
     print("function call");
     NotificationService().createNotificationChannel();
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      NotificationService().showNotification(message);
+      NotificationService().showNotification(message );
       // Handle foreground messages
       print("Foreground message received: ${message.notification?.body}");
       if (message.data.isNotEmpty) {
         emergencyDataController.getEmergencyData();
-       forSound = message.data['sound'] ?? "";
-        log("NO SOUND $forSound");
+       //forSound = message.data['sound'] ?? 'default';
+       //  log("SOUND CHECK $forSound");
         log("Payload data: ${message.data}");
         log("Payload data: ${message.notification!.title.toString()}");
         log("Payload data: ${message.notification!.body.toString()}");
@@ -66,13 +66,13 @@ class _MyNavigationBarState extends State<MyNavigationBar > {
                     Text(message.notification!.title.toString().capitalizeFirst.toString(),
                         //textAlign: TextAlign.center,
                         style: const TextStyle(
-                            fontSize: 15, color: Colors.black,
-                            fontWeight: FontWeight.w600)),
+                            fontSize: 15, color: Color(0xff303C5E),
+                            fontWeight: FontWeight.bold)),
                     addHeight(5),
                     Text(message.notification!.body.toString().capitalizeFirst.toString(),
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                            fontSize: 14, color: Colors.black,
+                            fontSize: 14, color: Colors.black54,
                             fontWeight: FontWeight.w600)),
 
                     addHeight(30),

@@ -1,10 +1,14 @@
+import 'dart:developer';
 import 'package:ecom_demo/push_notification/notifcation_service.dart';
+import 'package:ecom_demo/screens/bester_homepage.dart';
+import 'package:ecom_demo/screens/emergency_alert_page.dart';
 import 'package:ecom_demo/screens/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'conttroller/alert_handle_controller.dart';
+import 'custom_bottom_bar.dart';
 
 void main() async {
 
@@ -53,16 +57,7 @@ getFcmToken() async {
   userTypeController.getUserType();
   var fcmToekn = await FirebaseMessaging.instance.getToken();
   print("FCM TOEKN IS $fcmToekn");
-  // AndroidNotificationDetails androidNotificationDetails =
-  // AndroidNotificationDetails(
-  //   "demo_22",
-  //   "demo_app",
-  //   priority: Priority.high,
-  //   playSound: true,
-  //   sound: forSound != "" ? const RawResourceAndroidNotificationSound("ring"):null, // Default sound
-  //   importance: Importance.max,
-  // );
-  // NotificationDetails(android: androidNotificationDetails);
+
 
 }
 Future<void> messageHandler() async {
