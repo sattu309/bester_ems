@@ -1,5 +1,5 @@
 class ApiUrls{
-  static const baseUrl = "https://besterems.ssspl.net/api/";
+  static const baseUrl = "https://app.besterems.co.za/api/";
   static const loginApi = "${baseUrl}loginnow";
   static const userSignUpApi = "${baseUrl}userregister";
   static const emergencyAlertApi = "${baseUrl}getalerts";
@@ -10,5 +10,6 @@ class ApiUrls{
   static const getActiveAlertUrl = "${baseUrl}getactivealerts";
   static const updateTokenUrl = "${baseUrl}updatetoken";
   static const supportUrl = "${baseUrl}support";
+  static const serviceUrl = "${baseUrl}services";
 
 }

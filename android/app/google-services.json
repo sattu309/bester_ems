@@ -1,21 +1,22 @@
 {
   "project_info": {
-    "project_number": "194529937689",
-    "project_id": "testapp-ffd42",
-    "storage_bucket": "testapp-ffd42.appspot.com"
+    "project_number": "715539202704",
+    "firebase_url": "https://bester-f3880-default-rtdb.firebaseio.com",
+    "project_id": "bester-f3880",
+    "storage_bucket": "bester-f3880.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:194529937689:android:2a556d7d9f0cef03c75d88",
+        "mobilesdk_app_id": "1:715539202704:android:58fc359bf61b8af4bace15",
         "android_client_info": {
-          "package_name": "com.example.ecom_demo"
+          "package_name": "com.bester.besterapp"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDgwlT4C4R2TR0RLVwooLuSMNfKF6GCtjg"
+          "current_key": "AIzaSyCz2OMaOUFsK73rfkCPKrDu3JQqulUWmpM"
         }
       ],
       "services": {

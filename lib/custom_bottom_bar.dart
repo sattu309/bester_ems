@@ -59,20 +59,20 @@ class _MyNavigationBarState extends State<MyNavigationBar > {
                   children: [
                     addHeight(10),
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset("assets/images/bester.png"),
+                      padding: const EdgeInsets.all(30.0),
+                      child: Image.asset("assets/images/bester.png",),
                     ),
                     addHeight(10),
                     Text(message.notification!.title.toString().capitalizeFirst.toString(),
                         //textAlign: TextAlign.center,
                         style: const TextStyle(
-                            fontSize: 15, color: Color(0xff303C5E),
+                            fontSize: 16, color: Color(0xff303C5E),
                             fontWeight: FontWeight.bold)),
                     addHeight(5),
                     Text(message.notification!.body.toString().capitalizeFirst.toString(),
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                            fontSize: 14, color: Colors.black54,
+                            fontSize: 15, color: Colors.black54,
                             fontWeight: FontWeight.w600)),
 
                     addHeight(30),

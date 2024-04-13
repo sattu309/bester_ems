@@ -1,4 +1,4 @@
-package com.example.ecom_demo
+package com.bester.besterapp
 
 import io.flutter.embedding.android.FlutterActivity
 

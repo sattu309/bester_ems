@@ -8,6 +8,7 @@ import '../resources/add_text.dart';
 import '../common_repository/api_repository.dart';
 import 'bester_aboutUs_page.dart';
 import 'bester_contact_us_page.dart';
+import 'bester_service_page.dart';
 
 class BesterProfilePage extends StatefulWidget {
   const BesterProfilePage({Key? key}) : super(key: key);
@@ -105,16 +106,21 @@ class _BesterProfilePageState extends State<BesterProfilePage> {
               ),
             ),
             addHeight(30),
-            Row(
-              //mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset("assets/images/briefcase.png",height: 23,width: 23, color: AppTheme.buttonColor,),
-                addWidth(20),
-                Text("SERVICE",
-                    //textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(fontSize: 16, color:
-                    const Color(0xff6F7183), fontWeight: FontWeight.w600)),
-              ],
+            GestureDetector(
+              onTap: (){
+                Get.to(()=>const ServicePage());
+              },
+              child: Row(
+                //mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset("assets/images/briefcase.png",height: 23,width: 23, color: AppTheme.buttonColor,),
+                  addWidth(20),
+                  Text("SERVICES",
+                      //textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(fontSize: 16, color:
+                      const Color(0xff6F7183), fontWeight: FontWeight.w600)),
+                ],
+              ),
             ),
             addHeight(30),
             GestureDetector(
